@@ -188,5 +188,3 @@ npm run start
 The front-end application uses environment variables configured in the `.env.local` file.
 
 ---
-
-This project is licensed under the MIT License.
