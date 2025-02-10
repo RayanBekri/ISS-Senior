@@ -1,0 +1,51 @@
+// src/index.js
+require('dotenv').config();
+const express = require('express');
+const helmet = require('helmet');
+const cors = require('cors');
+const morgan = require('morgan');
+const { errorHandler } = require('./middleware/errorHandler');
+
+// Import routes
+const authRoutes = require('./routes/authRoutes');
+const itemRoutes = require('./routes/itemRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+const customOrderRoutes = require('./routes/customOrderRoutes');
+const inventoryRoutes = require('./routes/inventoryRoutes');
+const printerRoutes = require('./routes/printerRoutes');
+const financeRoutes = require('./routes/financeRoutes');
+const consultationRoutes = require('./routes/consultationRoutes');
+// const notificationRoutes = require('./routes/notificationRoutes'); // Optional
+
+const app = express();
+
+// Middlewares
+app.use(helmet());
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(morgan('combined'));
+
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/items', itemRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/custom-orders', customOrderRoutes);
+app.use('/api/inventory', inventoryRoutes);
+app.use('/api/printers', printerRoutes);
+app.use('/api/finance', financeRoutes);
+app.use('/api/consultations', consultationRoutes);
+// app.use('/api/notifications', notificationRoutes); // Optional
+
+// Health check
+app.get('/health', (req, res) => {
+  res.json({ status: 'OK' });
+});
+
+// Global Error Handler
+app.use(errorHandler);
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
