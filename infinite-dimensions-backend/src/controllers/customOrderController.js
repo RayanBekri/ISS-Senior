@@ -1,10 +1,7 @@
-// src/controllers/customOrderController.js
 const pool = require('../config/db');
 const { validationResult } = require('express-validator');
 
-// Assumes that the file upload middleware (multer) has stored file info in req.file
 exports.createCustomOrder = async (req, res, next) => {
-  // Validate input
   const errors = validationResult(req);
   if (!errors.isEmpty()){
     return res.status(400).json({ errors: errors.array() });

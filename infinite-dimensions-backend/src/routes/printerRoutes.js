@@ -1,4 +1,3 @@
-// src/routes/printerRoutes.js
 const express = require('express');
 const router = express.Router();
 const { getPrinters, createPrinter, updatePrinter, deletePrinter } = require('../controllers/printerController');

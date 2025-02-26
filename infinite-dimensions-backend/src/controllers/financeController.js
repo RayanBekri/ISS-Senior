@@ -1,10 +1,7 @@
-// src/controllers/financeController.js
 const pool = require('../config/db');
 const { validationResult } = require('express-validator');
 
-/**
- * Create a new finance record (record a transaction).
- */
+
 exports.recordTransaction = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()){
@@ -22,9 +19,7 @@ exports.recordTransaction = async (req, res, next) => {
   }
 };
 
-/**
- * Get all finance records.
- */
+
 exports.getFinanceRecords = async (req, res, next) => {
   try {
     const [rows] = await pool.query('SELECT * FROM finance');
@@ -34,9 +29,7 @@ exports.getFinanceRecords = async (req, res, next) => {
   }
 };
 
-/**
- * Update an existing finance record.
- */
+
 exports.updateFinanceRecord = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()){
@@ -55,9 +48,6 @@ exports.updateFinanceRecord = async (req, res, next) => {
   }
 };
 
-/**
- * Delete a finance record.
- */
 exports.deleteFinanceRecord = async (req, res, next) => {
   const { id } = req.params;
   try {

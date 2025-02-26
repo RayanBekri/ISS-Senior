@@ -1,4 +1,3 @@
-// src/routes/customOrderRoutes.js
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
@@ -7,7 +6,6 @@ const { createCustomOrder } = require('../controllers/customOrderController');
 const { body } = require('express-validator');
 const { authenticateToken } = require('../middleware/auth');
 
-// Configure multer storage (ensure the "uploads" folder exists)
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads/');

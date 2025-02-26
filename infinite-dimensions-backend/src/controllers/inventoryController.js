@@ -1,4 +1,3 @@
-// src/controllers/inventoryController.js
 const pool = require('../config/db');
 const { validationResult } = require('express-validator');
 

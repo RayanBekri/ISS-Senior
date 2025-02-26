@@ -1,4 +1,3 @@
-// src/routes/consultationRoutes.js
 const express = require('express');
 const router = express.Router();
 const { requestConsultation, updateConsultation } = require('../controllers/consultationController');

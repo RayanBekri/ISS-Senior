@@ -3,12 +3,10 @@
 @tailwind utilities;
 
 :root {
-  --foreground: 255, 255, 255;
-  --background: 0, 0, 0;
-  --primary: 255, 255, 255;
-  --primary-foreground: 0, 0, 0;
-  --secondary: 236, 72, 153;
-  --secondary-foreground: 255, 255, 255;
+  --purple-primary: 162, 0, 193;
+  --purple-light: 186, 85, 211;
+  --foreground: 0, 0, 0;
+  --background: 255, 255, 255;
 }
 
 body {
@@ -16,14 +14,22 @@ body {
   background: rgb(var(--background));
 }
 
-@layer components {
-  .btn-primary {
-    @apply bg-white text-black font-medium py-3 px-6 rounded hover:bg-gray-100 transition-colors;
-  }
+.hero-gradient {
+  background: linear-gradient(135deg, rgb(var(--purple-primary)), rgb(var(--purple-light)));
+  color: white;
 }
 
-/* Custom file input styling */
-input[type="file"]::-webkit-file-upload-button {
-  @apply bg-transparent text-white border border-gray-800 px-4 py-2 rounded mr-4 hover:border-gray-600 transition-colors;
+@layer components {
+  .btn-primary {
+    @apply bg-white text-black font-medium py-3 px-6 rounded-lg hover:bg-gray-100 transition-colors;
+  }
+
+  .search-input {
+    @apply w-full p-3 bg-white rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500;
+  }
+
+  .stat-card {
+    @apply bg-white/10 p-6 rounded-lg backdrop-blur-sm;
+  }
 }
 

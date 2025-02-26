@@ -1,4 +1,3 @@
-// src/controllers/itemController.js
 const pool = require('../config/db');
 const { validationResult } = require('express-validator');
 
@@ -12,7 +11,6 @@ exports.getItems = async (req, res, next) => {
 };
 
 exports.createItem = async (req, res, next) => {
-  // Validate input
   const errors = validationResult(req);
   if (!errors.isEmpty()){
     return res.status(400).json({ errors: errors.array() });

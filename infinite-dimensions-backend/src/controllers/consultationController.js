@@ -1,4 +1,3 @@
-// src/controllers/consultationController.js
 const pool = require('../config/db');
 const { validationResult } = require('express-validator');
 
