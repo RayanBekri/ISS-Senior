@@ -1,86 +1,290 @@
+"use client"
+
+import type React from "react"
+
 import Link from "next/link"
 import Image from "next/image"
-import { Facebook, Twitter, Instagram } from "lucide-react"
+import {
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  Youtube,
+  Mail,
+  Phone,
+  MapPin,
+  Clock,
+  ArrowRight,
+  Send,
+} from "lucide-react"
+import { useState } from "react"
 
 const Footer = () => {
+  const [email, setEmail] = useState("")
+  const [subscribed, setSubscribed] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+
+    // Simulate API call
+    setTimeout(() => {
+      setSubscribed(true)
+      setLoading(false)
+    }, 1000)
+  }
+
   return (
-    <footer className="bg-[#a408c3] text-white py-16">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
-          <div>
-            <Image
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ID%204-iq4Z8ZcABNOdnm7oTtQkwfSOSdGM4T.png"
-              alt="Infinite Dimensions Logo"
-              width={180}
-              height={60}
-              className="h-12 w-auto mb-4"
-            />
-            <p className="text-sm opacity-80">We help you find your dream print.</p>
-            <div className="flex space-x-4 mt-4">
-              <a href="#" className="text-white hover:text-gray-200">
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a href="#" className="text-white hover:text-gray-200">
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a href="#" className="text-white hover:text-gray-200">
-                <Instagram className="w-5 h-5" />
-              </a>
+    <footer className="bg-gradient-to-br from-[#a408c3] to-[#8a06a3] text-white">
+      {/* Newsletter Section */}
+      <div className="border-b border-white/10">
+        <div className="container mx-auto px-4 py-10">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="text-center md:text-left">
+              <h3 className="text-xl md:text-2xl font-bold mb-2">Subscribe to Our Newsletter</h3>
+              <p className="text-white/80 max-w-md">
+                Get the latest updates, exclusive offers, and 3D printing tips delivered to your inbox.
+              </p>
+            </div>
+
+            <div className="w-full md:w-auto">
+              {subscribed ? (
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                  <div className="inline-flex items-center justify-center w-10 h-10 bg-green-500 rounded-full mb-2">
+                    <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <p className="text-white font-medium">Thank you for subscribing!</p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubscribe} className="flex w-full max-w-md">
+                  <div className="relative flex-grow">
+                    <input
+                      type="email"
+                      required
+                      placeholder="Your email address"
+                      className="w-full px-4 py-3 rounded-l-lg bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/30"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="px-6 py-3 bg-white text-[#a408c3] font-medium rounded-r-lg hover:bg-gray-100 transition-colors flex items-center"
+                  >
+                    {loading ? (
+                      <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-[#a408c3]"></div>
+                    ) : (
+                      <>
+                        Subscribe <Send className="ml-2 w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Main Footer Content */}
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+          {/* Company Info */}
           <div>
-            <h3 className="font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-2">
+            <div className="mb-6">
+              <Image
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ID%204-iq4Z8ZcABNOdnm7oTtQkwfSOSdGM4T.png"
+                alt="Infinite Dimensions Logo"
+                width={180}
+                height={60}
+                className="h-12 w-auto mb-4"
+              />
+              <p className="text-white/80 mb-4">
+                We bring your ideas to life with cutting-edge 3D printing technology. Quality, precision, and
+                innovation.
+              </p>
+              <div className="flex space-x-3">
+                <a
+                  href="#"
+                  className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+                  aria-label="Facebook"
+                >
+                  <Facebook className="w-4 h-4" />
+                </a>
+                <a
+                  href="#"
+                  className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+                  aria-label="Twitter"
+                >
+                  <Twitter className="w-4 h-4" />
+                </a>
+                <a
+                  href="#"
+                  className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+                  aria-label="Instagram"
+                >
+                  <Instagram className="w-4 h-4" />
+                </a>
+                <a
+                  href="#"
+                  className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+                  aria-label="LinkedIn"
+                >
+                  <Linkedin className="w-4 h-4" />
+                </a>
+                <a
+                  href="#"
+                  className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+                  aria-label="YouTube"
+                >
+                  <Youtube className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4 relative">
+              <span className="relative z-10">Quick Links</span>
+              <span className="absolute bottom-0 left-0 w-12 h-1 bg-white/30 rounded-full"></span>
+            </h3>
+            <ul className="space-y-3">
               <li>
-                <Link href="/" className="text-sm opacity-80 hover:opacity-100">
-                  Home
+                <Link href="/" className="text-white/80 hover:text-white flex items-center group">
+                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span>Home</span>
                 </Link>
               </li>
               <li>
-                <Link href="/shop" className="text-sm opacity-80 hover:opacity-100">
-                  Shop
+                <Link href="/shop" className="text-white/80 hover:text-white flex items-center group">
+                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span>Shop</span>
                 </Link>
               </li>
               <li>
-                <Link href="/custom-order" className="text-sm opacity-80 hover:opacity-100">
-                  Custom Order
+                <Link href="/custom-order" className="text-white/80 hover:text-white flex items-center group">
+                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span>Custom Order</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/slicer" className="text-white/80 hover:text-white flex items-center group">
+                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span>3D Slicer</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/contacts" className="text-white/80 hover:text-white flex items-center group">
+                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span>Contact Us</span>
                 </Link>
               </li>
             </ul>
           </div>
+
+          {/* Services */}
           <div>
-            <h3 className="font-semibold mb-4">Customer Service</h3>
-            <ul className="space-y-2">
+            <h3 className="text-lg font-semibold mb-4 relative">
+              <span className="relative z-10">Our Services</span>
+              <span className="absolute bottom-0 left-0 w-12 h-1 bg-white/30 rounded-full"></span>
+            </h3>
+            <ul className="space-y-3">
               <li>
-                <Link href="/contacts" className="text-sm opacity-80 hover:opacity-100">
-                  Contact Us
+                <Link href="/shop" className="text-white/80 hover:text-white flex items-center group">
+                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span>3D Printed Products</span>
                 </Link>
               </li>
               <li>
-                <Link href="/cart" className="text-sm opacity-80 hover:opacity-100">
-                  Shopping Cart
+                <Link href="/custom-order" className="text-white/80 hover:text-white flex items-center group">
+                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span>Custom Prototyping</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/custom-order" className="text-white/80 hover:text-white flex items-center group">
+                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span>Small Batch Production</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/custom-order" className="text-white/80 hover:text-white flex items-center group">
+                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span>3D Design Services</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/contacts" className="text-white/80 hover:text-white flex items-center group">
+                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span>Consultation</span>
                 </Link>
               </li>
             </ul>
           </div>
+
+          {/* Contact Info */}
           <div>
-            <h3 className="font-semibold mb-4">Account</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/login" className="text-sm opacity-80 hover:opacity-100">
-                  Login
-                </Link>
+            <h3 className="text-lg font-semibold mb-4 relative">
+              <span className="relative z-10">Contact Us</span>
+              <span className="absolute bottom-0 left-0 w-12 h-1 bg-white/30 rounded-full"></span>
+            </h3>
+            <ul className="space-y-4">
+              <li className="flex items-start">
+                <MapPin className="w-5 h-5 mr-3 text-white/80 mt-0.5 flex-shrink-0" />
+                <span className="text-white/80">123 Innovation Street, Tunis, Tunisia</span>
               </li>
-              <li>
-                <Link href="/register" className="text-sm opacity-80 hover:opacity-100">
-                  Register
-                </Link>
+              <li className="flex items-center">
+                <Phone className="w-5 h-5 mr-3 text-white/80 flex-shrink-0" />
+                <a href="tel:+21612345678" className="text-white/80 hover:text-white">
+                  +216 12 345 678
+                </a>
+              </li>
+              <li className="flex items-center">
+                <Mail className="w-5 h-5 mr-3 text-white/80 flex-shrink-0" />
+                <a href="mailto:3dprintertunisia@gmail.com" className="text-white/80 hover:text-white">
+                  3dprintertunisia@gmail.com
+                </a>
+              </li>
+              <li className="flex items-start">
+                <Clock className="w-5 h-5 mr-3 text-white/80 mt-0.5 flex-shrink-0" />
+                <div className="text-white/80">
+                  <p>Monday - Friday: 9am - 6pm</p>
+                  <p>Saturday: 10am - 4pm</p>
+                  <p>Sunday: Closed</p>
+                </div>
               </li>
             </ul>
           </div>
         </div>
-        <div className="mt-12 pt-8 border-t border-white/20 text-sm opacity-80">
-          <p>© 2024 All Rights Reserved Terms of use Infinite Dimensions</p>
+      </div>
+
+      {/* Bottom Bar */}
+      <div className="border-t border-white/10">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <p className="text-white/70 text-sm mb-4 md:mb-0">
+              © {new Date().getFullYear()} Infinite Dimensions. All rights reserved.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4 text-sm text-white/70">
+              <Link href="/privacy-policy" className="hover:text-white transition-colors">
+                Privacy Policy
+              </Link>
+              <Link href="/terms-of-service" className="hover:text-white transition-colors">
+                Terms of Service
+              </Link>
+              <Link href="/shipping-policy" className="hover:text-white transition-colors">
+                Shipping Policy
+              </Link>
+              <Link href="/refund-policy" className="hover:text-white transition-colors">
+                Refund Policy
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </footer>
