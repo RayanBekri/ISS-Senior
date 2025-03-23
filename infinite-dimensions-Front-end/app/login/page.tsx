@@ -43,19 +43,18 @@ export default function LoginPage() {
     }
   }
 
-  // Update the testApiConnection function to handle 304 responses correctly
+  // Replace the testApiConnection function with this GET-based version
   const testApiConnection = async () => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api"}/health-check`, {
-        method: "HEAD",
+        method: "GET",
         mode: "cors",
         cache: "no-cache",
         headers: {
           Pragma: "no-cache",
-          "Cache-Control": "no-cache, no-store, must-revalidate",
+          "Cache-Control": "no-cache",
         },
       })
-      // Consider both 200 and 304 as successful responses
       return response.ok || response.status === 304
     } catch (error) {
       console.error("API connection test failed:", error)

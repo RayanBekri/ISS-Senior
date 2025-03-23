@@ -1,10 +1,13 @@
 "use client"
 
-import React from "react"
-import { useState, useRef } from "react"
+import React, { useState, useRef, useCallback } from "react"
 import { Upload, AlertCircle } from "lucide-react"
-import { parseSTL, calculatePrintParameters, type STLData } from "./stl-parser"
-import ModelViewer from "./model-viewer"
+import dynamic from "next/dynamic"
+import { customOrdersApi } from "../api/apiService"
+
+// Dynamically import the ModelViewer component with no SSR
+// This improves initial page load performance
+const ModelViewer = dynamic(() => import("./model-viewer"), { ssr: false })
 
 export default function SlicerPage() {
   const [file, setFile] = useState<File | null>(null)
@@ -12,24 +15,14 @@ export default function SlicerPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [priceEstimate, setPriceEstimate] = useState<number | null>(null)
-  const [stlData, setStlData] = useState<STLData | null>(null)
   const [slicingResult, setSlicingResult] = useState<{
     printTimeMinutes: number
-    materialUsageGrams: number
+    materialUsageGrams?: number
   } | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Default parameters for quote calculation
-  const defaultParameters = {
-    layerHeight: 0.16,
-    infill: 15,
-    material: "pla",
-    quality: "standard",
-    supports: false,
-    wallThickness: 1.2,
-  }
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Use useCallback for event handlers to prevent unnecessary re-creation
+  const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     setError(null)
     setPriceEstimate(null)
     setSlicingResult(null)
@@ -52,25 +45,15 @@ export default function SlicerPage() {
 
       setFile(selectedFile)
 
-      // Create URL for the 3D viewer
+      // Create a blob URL for the file - this helps with CORS issues
       const url = URL.createObjectURL(selectedFile)
       setFileUrl(url)
-
-      try {
-        // Read and parse the STL file
-        const arrayBuffer = await selectedFile.arrayBuffer()
-        const parsedData = parseSTL(arrayBuffer)
-        setStlData(parsedData)
-      } catch (err) {
-        setError("Failed to parse STL file")
-        setFile(null)
-        setFileUrl(null)
-      }
     }
-  }
+  }, [])
 
-  const getApproximateQuote = async () => {
-    if (!stlData) {
+  // Update the getApproximateQuote function to better handle file uploads
+  const getApproximateQuote = useCallback(async () => {
+    if (!file) {
       setError("Please upload an STL file first")
       return
     }
@@ -79,38 +62,50 @@ export default function SlicerPage() {
     setError(null)
 
     try {
-      // Calculate print parameters
-      const result = calculatePrintParameters(stlData, defaultParameters)
-      setSlicingResult(result)
+      // Create a new FormData instance
+      const formData = new FormData()
 
-      // Send to API for pricing
-      const response = await fetch("/api/calculate-price", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          printTimeMinutes: result.printTimeMinutes,
-          materialUsageGrams: result.materialUsageGrams,
-          material: defaultParameters.material,
-          quality: defaultParameters.quality,
-        }),
+      // Log file details for debugging
+      console.log("Uploading file:", file.name, file.size, "bytes", file.type)
+
+      // Append the file with the correct field name
+      formData.append("model", file)
+
+      // Call the API to get the estimate
+      const result = await customOrdersApi.estimatePrice(formData)
+      console.log("Received estimate result:", result)
+
+      // Convert time from hours to minutes for UI consistency
+      const printTimeMinutes = Math.round(result.time * 60)
+
+      setSlicingResult({
+        printTimeMinutes: printTimeMinutes,
       })
 
-      if (!response.ok) {
-        throw new Error("Failed to get price estimate")
-      }
-
-      const data = await response.json()
-      setPriceEstimate(data.price)
+      setPriceEstimate(result.price)
     } catch (err) {
+      console.error("Error getting price estimate:", err)
       setError(err instanceof Error ? err.message : "Failed to get price estimate")
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [file])
 
-  // Clean up object URL when component unmounts or file changes
+  const resetFile = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation()
+      if (fileUrl) {
+        URL.revokeObjectURL(fileUrl)
+      }
+      setFile(null)
+      setFileUrl(null)
+      setPriceEstimate(null)
+      setSlicingResult(null)
+    },
+    [fileUrl],
+  )
+
+  // Clean up blob URL when component unmounts or fileUrl changes
   React.useEffect(() => {
     return () => {
       if (fileUrl) {
@@ -139,17 +134,7 @@ export default function SlicerPage() {
               <div>
                 <p className="text-lg font-medium text-gray-900">{file.name}</p>
                 <p className="text-sm text-gray-500">{(file.size / (1024 * 1024)).toFixed(2)} MB</p>
-                <button
-                  className="mt-4 text-[#a408c3] hover:text-[#8a06a3] text-sm"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setFile(null)
-                    setFileUrl(null)
-                    setStlData(null)
-                    setPriceEstimate(null)
-                    setSlicingResult(null)
-                  }}
-                >
+                <button className="mt-4 text-[#a408c3] hover:text-[#8a06a3] text-sm" onClick={resetFile}>
                   Choose a different file
                 </button>
               </div>
@@ -170,7 +155,7 @@ export default function SlicerPage() {
           )}
         </div>
 
-        {/* 3D Model Preview */}
+        {/* 3D Model Preview - Only render when needed */}
         {fileUrl && (
           <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
             <h2 className="text-xl font-semibold mb-4">3D Model Preview</h2>
@@ -201,7 +186,7 @@ export default function SlicerPage() {
           </div>
         )}
 
-        {/* Quote Results */}
+        {/* Quote Results - Only render when needed */}
         {priceEstimate !== null && slicingResult && (
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-xl font-semibold mb-4">Quote Results</h2>
@@ -213,11 +198,6 @@ export default function SlicerPage() {
                   {Math.floor(slicingResult.printTimeMinutes / 60)} hours{" "}
                   {Math.round(slicingResult.printTimeMinutes % 60)} minutes
                 </span>
-              </div>
-
-              <div className="flex justify-between pb-4 border-b border-gray-200">
-                <span className="text-gray-700">Material Usage:</span>
-                <span className="font-medium">{slicingResult.materialUsageGrams.toFixed(1)} grams</span>
               </div>
 
               <div className="flex justify-between pt-2">
@@ -236,4 +216,3 @@ export default function SlicerPage() {
     </div>
   )
 }
-

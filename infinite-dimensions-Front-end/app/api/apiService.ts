@@ -23,16 +23,14 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/a
 async function checkApiConnectivity() {
   try {
     const response = await fetch(`${API_BASE_URL}/health-check`, {
-      method: "HEAD",
+      method: "GET",
       mode: "cors",
       cache: "no-cache",
       headers: {
-        // Add a cache-busting query parameter
         Pragma: "no-cache",
-        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Cache-Control": "no-cache",
       },
     })
-    // Both 200 OK and 304 Not Modified indicate the API is available
     const isConnected = response.ok || response.status === 304
     console.log("API connectivity check:", isConnected ? "Success" : "Failed", `(Status: ${response.status})`)
     return isConnected
@@ -243,28 +241,47 @@ export const customOrdersApi = {
   // Estimate custom order price
   estimatePrice: async (fileData: FormData): Promise<CustomOrderEstimate> => {
     try {
-      // Make sure we're not sending any authorization headers
+      console.log("Sending estimate request to:", `${API_BASE_URL}/custom-orders/estimate`)
+
+      // Create a new FormData instance to ensure proper formatting
+      const formData = new FormData()
+
+      // If fileData already contains a 'model' field, extract and re-append it
+      const modelFile = fileData.get("model") as File
+      if (modelFile) {
+        console.log("File being sent:", modelFile.name, modelFile.size, "bytes")
+        formData.append("model", modelFile)
+      } else {
+        console.error("No model file found in form data")
+        throw new Error("No 3D model file provided")
+      }
+
       const response = await fetch(`${API_BASE_URL}/custom-orders/estimate`, {
         method: "POST",
-        // No headers specified to avoid authorization issues
-        body: fileData,
+        body: formData,
+        // Don't set Content-Type header - browser will set it with boundary for FormData
       })
+
+      console.log("Estimate response status:", response.status)
 
       if (!response.ok) {
         const errorText = await response.text()
+        console.error("Estimate error response:", errorText)
+
         let errorMessage
         try {
-          // Try to parse as JSON
           const errorData = JSON.parse(errorText)
-          errorMessage = errorData.message
+          errorMessage = errorData.message || "Failed to estimate price"
         } catch {
-          // If not JSON, use the text directly
-          errorMessage = errorText
+          errorMessage = errorText || `Failed to estimate price: ${response.status}`
         }
-        throw new Error(errorMessage || `Failed to estimate price: ${response.status}`)
+
+        throw new Error(errorMessage)
       }
 
-      return await response.json()
+      const responseData = await response.json()
+      console.log("Estimate response data:", responseData)
+      return responseData
     } catch (error) {
       console.error("Error estimating price:", error)
       throw error

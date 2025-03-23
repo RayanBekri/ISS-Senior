@@ -47,17 +47,28 @@ export default function CustomOrder() {
     }
   }
 
-  const getEstimate = async (file: File) => {
+  // Update the getEstimate function to better handle file uploads
+  const getEstimate = async (selectedFile: File) => {
     setEstimateLoading(true)
     setError(null)
 
     try {
+      // Create a new FormData instance
       const formData = new FormData()
-      formData.append("model", file)
 
+      // Log file details for debugging
+      console.log("Uploading file for estimate:", selectedFile.name, selectedFile.size, "bytes", selectedFile.type)
+
+      // Append the file with the correct field name
+      formData.append("model", selectedFile)
+
+      // Call the API to get the estimate
       const estimateData = await customOrdersApi.estimatePrice(formData)
+      console.log("Received estimate data:", estimateData)
+
       setEstimate(estimateData)
     } catch (err) {
+      console.error("Error getting estimate:", err)
       setError(err instanceof Error ? err.message : "Failed to get price estimate")
     } finally {
       setEstimateLoading(false)

@@ -82,24 +82,19 @@ const estimatePrice = async (req, res, next) => {
       await fs.unlink(req.file.path).catch(err => console.error('Error removing non-STL file:', err));
       return res.status(400).json({ message: 'Only STL files are allowed.' });
     }
-    // Retrieve environment configuration
     const curaDir = process.env.CURA_DIR || 'C:\\Program Files\\UltiMaker Cura 5.7.2';
     const configPath = process.env.CURA_CONFIG_PATH || 'C:\\Users\\bekri\\Downloads\\ender6_config.json';
     const outputGcodePath = process.env.CURA_OUTPUT_PATH || 'C:\\Users\\bekri\\Downloads\\output.gcode';
     const stlFilePath = path.resolve(req.file.path);
-    // Create a temporary text file for terminal output
+
     const tempOutputFile = path.join('C:\\Users\\bekri\\Downloads\\Infinite Dimensions\\infinite-dimensions-backend\\uploads', `slicer_output_${Date.now()}.txt`);
-    // Build the curaengine command.
-    // Instead of combining "cd" and the command in one, we use the cwd option to simulate "cd"
+
     const command = `curaengine slice -j "${configPath}" -l "${stlFilePath}" > "${tempOutputFile}"`;
     console.log('CuraEngine command:', command);
-    // Execute the command with cwd set to curaDir so it's equivalent to running "cd curaDir" first.
     const { stdout, stderr } = await execPromise(command, { cwd: curaDir });
     console.log('CuraEngine stdout:', stdout);
     if (stderr) console.error('CuraEngine stderr:', stderr);
-    // Read the temporary output text file
     const outputText = await fs.readFile(tempOutputFile, 'utf8');
-    // Parse for a line starting with ";TIME:" (e.g., ";TIME:1645")
     let timeInSeconds = 0;
     const lines = outputText.split('\n');
     console.log('Output text lines:', lines);
@@ -111,16 +106,12 @@ const estimatePrice = async (req, res, next) => {
         break;
       }
     }
-    // Convert time from seconds to hours (rounded to two decimals)
     const timeInHours = parseFloat((timeInSeconds / 3600).toFixed(2));
-    // Placeholder formula for price (e.g., $5 per hour)
     const price = timeInHours * 5;
     console.log('Extracted time (seconds):', timeInSeconds);
     console.log('Time in hours:', timeInHours);
     console.log('Calculated price:', price);
-    // Cleanup: delete temporary text file and output file
     await fs.unlink(tempOutputFile).catch(err => console.error('Cleanup error (temp file):', err));
-    // Optionally remove the uploaded STL file if not needed.
     return res.status(200).json({ time: timeInHours, price });
   } catch (error) {
     console.error('Error in estimatePrice:', error);
