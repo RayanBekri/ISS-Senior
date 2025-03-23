@@ -209,11 +209,9 @@ exports.updatePassword = async (req, res, next) => {
 
 exports.me = async (req, res, next) => {
   try {
-    // The authentication middleware should have already added req.user
     if (!req.user) {
       return res.status(401).json({ message: 'User not authenticated' });
     }
-    // Retrieve token from header
     const authHeader = req.headers.authorization;
     let token = "";
     if (authHeader && authHeader.startsWith("Bearer ")) {

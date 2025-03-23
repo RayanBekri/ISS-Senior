@@ -1,3 +1,4 @@
+// User types
 export interface User {
   user_id: number
   email: string
@@ -32,46 +33,83 @@ export interface AuthResponse {
   token: string
 }
 
-// Item types
-export interface Item {
-  item_id: number
-  name: string
-  description: string | null
-  price: string
-  discount: string | null
-  status: "IN_STOCK" | "OUT_OF_STOCK" | "LOW_IN_STOCK"
-  added_by: number | null
-  modified_by: number | null
-  created_at: string
-  updated_at: string
+export interface PasswordResetRequest {
+  email: string
 }
 
-export interface ItemsResponse {
-  items: Item[]
-  total: number
+export interface PasswordResetConfirmRequest {
+  resetToken: string
+  newPassword: string
+}
+
+export interface PasswordUpdateRequest {
+  oldPassword: string
+  newPassword: string
+}
+
+// Item types
+export interface Item {
+  id: number
+  name: string
+  description: string
+  price: number
+  discount?: number
+  inStock: boolean
+  image: string
 }
 
 // Order types
 export interface Order {
-  order_id: number
-  user_id: number
+  client_id: number
   status: "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED"
-  total_amount: string
+  payment_method: "CASH" | "CREDIT_CARD" | "BANK_TRANSFER"
+  delivery_address: string
+  postal_code: string
+  city: string
+  comments?: string
+  total_cost: number
+}
+
+export interface OrderResponse {
+  message: string
+  orderId: number
+}
+
+// Custom Order types
+export interface CustomOrder {
+  userId: number
+  material: string
+  color: string
+  strength: string
+  additionalInfo?: string
+  model: File
+}
+
+export interface CustomOrderEstimate {
+  time: number
+  price: number
+}
+
+// Consultation types
+export interface ConsultationRequest {
+  client_id: number
+  employee_id: number
+  requested_time: string
+  notes?: string
+}
+
+export interface ConsultationResponse {
+  message: string
+  consultationId: number
+}
+
+// Notification types
+export interface Notification {
+  notification_id: number
+  user_id: number
+  content: string
+  is_read: boolean
   created_at: string
   updated_at: string
-  items: OrderItem[]
-}
-
-export interface OrderItem {
-  item_id: number
-  name: string
-  quantity: number
-  price: string
-}
-
-// Password change types
-export interface ChangePasswordRequest {
-  old_password: string
-  new_password: string
 }
 

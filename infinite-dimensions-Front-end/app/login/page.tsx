@@ -26,10 +26,53 @@ export default function LoginPage() {
     }
   }, [user, router])
 
+  // Update the handleSubmit function to better handle network errors
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    await login(formData)
+    clearError()
+
+    try {
+      // Wait for the login to complete
+      await login(formData)
+
+      // Explicitly redirect to home page after successful login
+      router.push("/")
+    } catch (err) {
+      console.error("Login submission error:", err)
+      // If the error is already set in the AuthContext, we don't need to do anything else
+    }
   }
+
+  // Update the testApiConnection function to handle 304 responses correctly
+  const testApiConnection = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api"}/health-check`, {
+        method: "HEAD",
+        mode: "cors",
+        cache: "no-cache",
+        headers: {
+          Pragma: "no-cache",
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+        },
+      })
+      // Consider both 200 and 304 as successful responses
+      return response.ok || response.status === 304
+    } catch (error) {
+      console.error("API connection test failed:", error)
+      return false
+    }
+  }
+
+  // Add useEffect to check API connectivity on component mount
+  useEffect(() => {
+    testApiConnection().then((isConnected) => {
+      if (!isConnected) {
+        console.warn("API server appears to be unreachable")
+      } else {
+        console.log("API server is reachable")
+      }
+    })
+  }, [])
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
@@ -123,4 +166,3 @@ export default function LoginPage() {
     </div>
   )
 }
-

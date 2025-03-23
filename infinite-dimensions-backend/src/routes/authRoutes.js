@@ -10,7 +10,7 @@ const {
   updatePassword,
   me
 } = require('../controllers/authController');
-const { authenticateToken } = require('../middleware/auth');
+const { authenticateToken, authorizeRoles  } = require('../middleware/auth');
 
 router.post('/register',
   [
@@ -32,6 +32,8 @@ router.post('/register',
 );
 
 router.post('/6f4a1d3b8c',
+  authenticateToken,
+  authorizeRoles('ADMIN'),
   [
     body('email').isEmail().withMessage('A valid email is required'),
     body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),

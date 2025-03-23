@@ -1,5 +1,6 @@
 import Image from "next/image"
-import { Search } from "lucide-react"
+import Link from "next/link"
+import { Search, PrinterIcon as Printer3d, Layers, CuboidIcon as Cube, Zap, Award, Users } from "lucide-react"
 
 export default function Home() {
   return (
@@ -15,138 +16,192 @@ export default function Home() {
               </h1>
               <div className="flex space-x-12 mb-8">
                 <div>
-                  <p className="text-3xl font-bold">50+</p>
-                  <p className="text-sm opacity-80">Print Species</p>
+                  <p className="text-3xl font-bold">15+</p>
+                  <p className="text-sm opacity-80">Printer Models</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-bold">100+</p>
-                  <p className="text-sm opacity-80">Customers</p>
+                  <p className="text-3xl font-bold">1000+</p>
+                  <p className="text-sm opacity-80">Projects Completed</p>
+                </div>
+                <div>
+                  <p className="text-3xl font-bold">24/7</p>
+                  <p className="text-sm opacity-80">Production</p>
                 </div>
               </div>
               <div className="relative">
-                <input type="text" placeholder="What are you looking for?" className="search-input pr-12" />
+                <input type="text" placeholder="What would you like to create?" className="search-input pr-12" />
                 <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
               </div>
             </div>
             <div className="md:w-1/2 flex justify-center">
-              <div className="relative w-64 h-64">
-                <Image src="/placeholder.svg" alt="3D Printer" fill className="object-contain" />
+              <div className="relative w-80 h-80">
+                <Image
+                  src="/placeholder.svg?height=400&width=400"
+                  alt="3D Printer in Action"
+                  fill
+                  className="object-contain"
+                />
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Best Selling Section with white background */}
+      {/* Services Section */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-8 text-gray-900">Best Selling Plants</h2>
+          <h2 className="text-3xl font-bold mb-2 text-center text-gray-900">Our Services</h2>
+          <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+            From concept to creation, we bring your ideas to life with cutting-edge 3D printing technology
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-white rounded-lg p-6 shadow-lg transition-transform hover:scale-105">
+              <div className="w-16 h-16 bg-[#A200C1] rounded-full mb-6 flex items-center justify-center">
+                <Printer3d className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Custom Prototyping</h3>
+              <p className="text-gray-600">
+                Rapid prototyping services to bring your concepts to life quickly and accurately.
+              </p>
+            </div>
+            <div className="bg-white rounded-lg p-6 shadow-lg transition-transform hover:scale-105">
+              <div className="w-16 h-16 bg-[#A200C1] rounded-full mb-6 flex items-center justify-center">
+                <Layers className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Small Batch Production</h3>
+              <p className="text-gray-600">
+                Cost-effective small batch manufacturing with consistent quality and quick turnaround.
+              </p>
+            </div>
+            <div className="bg-white rounded-lg p-6 shadow-lg transition-transform hover:scale-105">
+              <div className="w-16 h-16 bg-[#A200C1] rounded-full mb-6 flex items-center justify-center">
+                <Cube className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">3D Design Services</h3>
+              <p className="text-gray-600">Professional 3D modeling and design services to help realize your vision.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Products Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold mb-2 text-center text-gray-900">Featured Creations</h2>
+          <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+            Explore some of our most popular and innovative 3D printed products
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                name: "All Car Brands",
-                price: "₨ 1,400.00",
+                name: "Custom Mechanical Keyboard",
+                price: "₨ 2,400.00",
                 image: "/placeholder.svg",
+                description: "Fully customizable mechanical keyboard with ergonomic design",
               },
               {
-                name: "2025 Formula 1 calendar",
-                price: "₨ 900.00",
-                image: "/placeholder.svg",
-              },
-              {
-                name: "Honeycomb shoetrack stack",
+                name: "Architectural Model Set",
                 price: "₨ 3,500.00",
                 image: "/placeholder.svg",
+                description: "Detailed architectural models for presentations and displays",
+              },
+              {
+                name: "Personalized Desk Organizer",
+                price: "₨ 1,200.00",
+                image: "/placeholder.svg",
+                description: "Modular desk organization system tailored to your workspace",
               },
             ].map((product, index) => (
-              <div key={index} className="bg-white rounded-lg overflow-hidden shadow-lg">
+              <div
+                key={index}
+                className="bg-white rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105"
+              >
                 <div className="aspect-square relative">
                   <Image src={product.image || "/placeholder.svg"} alt={product.name} fill className="object-cover" />
                 </div>
                 <div className="p-6">
                   <h3 className="font-semibold mb-2 text-gray-900">{product.name}</h3>
-                  <p className="text-lg text-gray-700">{product.price}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section with light gray background */}
-      <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-12 text-center text-gray-900">About us</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-[#A200C1] rounded-full mx-auto mb-4 flex items-center justify-center">
-                <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold mb-2 text-gray-900">Large Assortment</h3>
-              <p className="text-sm text-gray-600">
-                We offer many different types of products with fewer variations in each category
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-[#A200C1] rounded-full mx-auto mb-4 flex items-center justify-center">
-                <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold mb-2 text-gray-900">Fast & Free Shipping</h3>
-              <p className="text-sm text-gray-600">
-                4-day or less delivery time, free shipping and an expedited delivery option
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-[#A200C1] rounded-full mx-auto mb-4 flex items-center justify-center">
-                <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold mb-2 text-gray-900">24/7 Support</h3>
-              <p className="text-sm text-gray-600">Answers to any business related inquiry 24/7 and in real-time</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Categories Section with white background */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-12 text-center text-gray-900">Categories</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { name: "Education", image: "/placeholder.svg" },
-              { name: "Hobby & DIY", image: "/placeholder.svg" },
-              { name: "Tools", image: "/placeholder.svg" },
-            ].map((category, index) => (
-              <div key={index} className="relative group">
-                <div className="aspect-square relative rounded-lg overflow-hidden">
-                  <Image
-                    src={category.image || "/placeholder.svg"}
-                    alt={category.name}
-                    fill
-                    className="object-cover transition-transform group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-black/40 flex items-end p-6">
-                    <h3 className="text-xl font-semibold text-white">{category.name}</h3>
+                  <p className="text-gray-600 mb-3">{product.description}</p>
+                  <div className="flex justify-between items-center">
+                    <p className="text-lg text-gray-700">{product.price}</p>
+                    <Link href="/shop" className="text-[#A200C1] hover:underline">
+                      View Details
+                    </Link>
                   </div>
                 </div>
               </div>
             ))}
+          </div>
+          <div className="text-center mt-12">
+            <Link
+              href="/shop"
+              className="bg-[#A200C1] text-white py-3 px-8 rounded-lg hover:bg-[#8a06a3] transition-colors inline-block"
+            >
+              Browse All Products
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose Us Section */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold mb-2 text-center text-gray-900">Why Choose Infinite Dimensions</h2>
+          <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+            We combine cutting-edge technology with exceptional service to deliver outstanding results
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-[#A200C1] rounded-full mx-auto mb-4 flex items-center justify-center">
+                <Zap className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2 text-gray-900">Fast Turnaround</h3>
+              <p className="text-sm text-gray-600">
+                Most projects completed within 48-72 hours with expedited options available
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-[#A200C1] rounded-full mx-auto mb-4 flex items-center justify-center">
+                <Award className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2 text-gray-900">Premium Materials</h3>
+              <p className="text-sm text-gray-600">
+                Wide selection of high-quality filaments and resins for any application
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-[#A200C1] rounded-full mx-auto mb-4 flex items-center justify-center">
+                <Users className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2 text-gray-900">Expert Support</h3>
+              <p className="text-sm text-gray-600">
+                Our team of 3D printing specialists is available to help with any project
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-16 bg-[#A200C1] text-white">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold mb-4">Ready to bring your ideas to life?</h2>
+          <p className="mb-8 max-w-2xl mx-auto">
+            Whether you have a detailed 3D model or just a concept, we can help you create something amazing.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Link
+              href="/custom-order"
+              className="bg-white text-[#A200C1] py-3 px-8 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              Start a Custom Order
+            </Link>
+            <Link
+              href="/slicer"
+              className="border-2 border-white text-white py-3 px-8 rounded-lg hover:bg-white/10 transition-colors"
+            >
+              Get a Quote
+            </Link>
           </div>
         </div>
       </section>

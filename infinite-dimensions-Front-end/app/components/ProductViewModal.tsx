@@ -94,7 +94,7 @@ export default function ProductViewModal({ isOpen, onClose, product }: ProductVi
                     key={index}
                     onClick={() => setSelectedImage(index)}
                     className={`aspect-square relative rounded-lg overflow-hidden border-2 
-                      ${selectedImage === index ? "border-[#a408c3]" : "border-transparent"}`}
+                    ${selectedImage === index ? "border-[#a408c3]" : "border-transparent"}`}
                   >
                     <Image
                       src={image || "/placeholder.svg"}
@@ -110,10 +110,10 @@ export default function ProductViewModal({ isOpen, onClose, product }: ProductVi
             {/* Product Details */}
             <div className="space-y-6">
               <div className="flex items-center gap-3">
-                <span className="text-2xl font-bold text-[#a408c3]">${product.price.toFixed(2)}</span>
+                <span className="text-2xl font-bold text-[#a408c3]">{product.price.toFixed(3)} TND</span>
                 {product.originalPrice && (
                   <>
-                    <span className="text-gray-500 line-through">${product.originalPrice.toFixed(2)}</span>
+                    <span className="text-gray-500 line-through">{product.originalPrice.toFixed(3)} TND</span>
                     <span className="text-red-500">{discount}% Off</span>
                   </>
                 )}

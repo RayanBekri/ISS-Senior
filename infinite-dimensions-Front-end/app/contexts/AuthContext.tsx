@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
-import type { User, LoginRequest, RegisterRequest } from "../api/types"
+import type { User, LoginRequest, RegisterRequest, PasswordUpdateRequest } from "../api/types"
 import { authApi } from "../api/apiService"
 
 interface AuthContextType {
@@ -9,9 +9,10 @@ interface AuthContextType {
   token: string | null
   isLoading: boolean
   error: string | null
-  login: (data: LoginRequest) => Promise<void>
-  register: (data: RegisterRequest) => Promise<void>
+  login: (data: LoginRequest) => Promise<any>
+  register: (data: RegisterRequest) => Promise<{ message: string }>
   logout: () => void
+  updatePassword: (data: PasswordUpdateRequest) => Promise<{ message: string }>
   clearError: () => void
 }
 
@@ -30,45 +31,56 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     if (storedToken && storedUser) {
       setToken(storedToken)
-      setUser(JSON.parse(storedUser))
+      try {
+        setUser(JSON.parse(storedUser))
+      } catch (e) {
+        console.error("Failed to parse stored user:", e)
+        localStorage.removeItem("auth_user")
+        localStorage.removeItem("auth_token")
+      }
     }
 
     setIsLoading(false)
   }, [])
 
-  // Fetch current user when token changes
-  useEffect(() => {
-    const fetchCurrentUser = async () => {
-      if (!token) return
-
-      try {
-        const userData = await authApi.getCurrentUser(token)
-        setUser(userData)
-        localStorage.setItem("auth_user", JSON.stringify(userData))
-      } catch (err) {
-        console.error("Failed to fetch current user:", err)
-        logout()
-      }
-    }
-
-    fetchCurrentUser()
-  }, [token])
-
+  // Update the login function in AuthContext to better handle network errors
   const login = async (data: LoginRequest) => {
     setIsLoading(true)
     setError(null)
 
     try {
       const response = await authApi.login(data)
+
+      // Log the response to debug
+      console.log("Login response:", response)
+
+      // Check if we have a valid response with token and user
+      if (!response.token || !response.user) {
+        throw new Error("Invalid response from server: missing token or user data")
+      }
+
+      // Set the token and user in state
       setToken(response.token)
       setUser(response.user)
 
       // Store auth data in localStorage
       localStorage.setItem("auth_token", response.token)
       localStorage.setItem("auth_user", JSON.stringify(response.user))
+
+      return response // Return the response for chaining
     } catch (err) {
+      // Handle network errors specifically
+      if (err instanceof TypeError && err.message.includes("NetworkError")) {
+        const errorMessage =
+          "Network error: Cannot connect to the server. Please check your internet connection and try again."
+        setError(errorMessage)
+        console.error("Network error during login:", err)
+        throw new Error(errorMessage)
+      }
+
       setError(err instanceof Error ? err.message : "Login failed")
       console.error("Login error:", err)
+      throw err // Re-throw to allow handling in the component
     } finally {
       setIsLoading(false)
     }
@@ -80,15 +92,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       const response = await authApi.register(data)
-      setToken(response.token)
-      setUser(response.user)
-
-      // Store auth data in localStorage
-      localStorage.setItem("auth_token", response.token)
-      localStorage.setItem("auth_user", JSON.stringify(response.user))
+      return response
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed")
       console.error("Registration error:", err)
+      throw err
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const updatePassword = async (data: PasswordUpdateRequest) => {
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      if (!token) throw new Error("Not authenticated")
+      const response = await authApi.updatePassword(token, data)
+      return response
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Password update failed")
+      console.error("Password update error:", err)
+      throw err
     } finally {
       setIsLoading(false)
     }
@@ -115,6 +140,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         login,
         register,
         logout,
+        updatePassword,
         clearError,
       }}
     >

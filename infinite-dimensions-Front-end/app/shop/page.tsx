@@ -1,34 +1,29 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Search, Heart, ShoppingCart, AlertCircle } from "lucide-react"
 import { useCart } from "../contexts/CartContext"
 import ProductViewModal from "../components/ProductViewModal"
 import { useItems } from "../hooks/useItems"
-import type { Item } from "../api/types"
+import type { Item as BaseItem } from "../api/types"
 
-const categories = [
-  { name: "GYM", count: 134 },
-  { name: "IT Gadget", count: 150 },
-  { name: "Fashion", count: 54 },
-  { name: "Parts", count: 47 },
-  { name: "Cars accessories", count: 43 },
-  { name: "Keychains", count: 38 },
-  { name: "Education", count: 16 },
-]
+// Extended Item interface with category
+interface Item extends BaseItem {
+  category?: string
+}
 
 export default function ShopPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("All Categories")
   const [selectedProduct, setSelectedProduct] = useState<Item | null>(null)
+  const [categories, setCategories] = useState<{ name: string; count: number }[]>([])
   const { addToCart } = useCart()
 
-  // Use the custom hook to fetch items
+  // Use the custom hook to fetch items with the extended type
   const {
-    items = [], // Provide a default empty array
+    items = [] as Item[], // Provide a default empty array with the extended type
     totalItems = 0, // Provide a default value
     currentPage,
     isLoading,
@@ -36,7 +31,29 @@ export default function ShopPage() {
     changePage,
     searchItems,
     refreshItems,
-  } = useItems({ pageSize: 12 })
+  } = useItems<Item>({ pageSize: 12 })
+
+  // Extract unique categories from items
+  useEffect(() => {
+    if (items && items.length > 0) {
+      const categoryMap = new Map<string, number>()
+
+      // Count items in each category
+      items.forEach((item) => {
+        const category = item.category || "Uncategorized"
+        categoryMap.set(category, (categoryMap.get(category) || 0) + 1)
+      })
+
+      // Convert map to array of category objects
+      const uniqueCategories = Array.from(categoryMap.entries()).map(([name, count]) => ({
+        name,
+        count,
+      }))
+
+      // Add "All Categories" option
+      setCategories([{ name: "All Categories", count: items.length }, ...uniqueCategories])
+    }
+  }, [items])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -64,9 +81,13 @@ export default function ShopPage() {
       image: "/placeholder.svg", // Replace with actual image from API when available
       description: item.description || "",
       rating: 4.5, // Replace with actual rating when available
-      category: "Category", // Replace with actual category when available
+      category: item.category || "Uncategorized", // Use the category from the item
     }
   }
+
+  // Filter items by selected category
+  const filteredItems =
+    selectedCategory === "All Categories" ? items : items.filter((item) => item.category === selectedCategory)
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -96,14 +117,6 @@ export default function ShopPage() {
       <div className="flex flex-col md:flex-row gap-8">
         {/* Sidebar */}
         <div className="w-full md:w-64 flex-shrink-0">
-          {/* Filter Button */}
-          <button className="mb-6 bg-[#a408c3] text-white px-6 py-2 rounded-full flex items-center gap-2">
-            <span>Filter</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M4 21v-7m0 0V4m0 10h16m0 0V4m0 10v7" />
-            </svg>
-          </button>
-
           {/* Categories */}
           <div className="mb-8">
             <h3 className="text-xl font-semibold mb-4">All Categories</h3>
@@ -130,29 +143,9 @@ export default function ShopPage() {
           <div className="mb-8">
             <h3 className="text-xl font-semibold mb-4">Price</h3>
             <div className="flex items-center space-x-2">
-              <span>Price: 50 - 1,500</span>
+              <span>Price: 50 - 1,500 TND</span>
             </div>
             <input type="range" min="50" max="1500" defaultValue="1500" className="w-full accent-[#a408c3] mt-2" />
-          </div>
-
-          {/* Rating Filter */}
-          <div>
-            <h3 className="text-xl font-semibold mb-4">Rating</h3>
-            <div className="space-y-2">
-              {[5, 4, 3, 2, 1].map((rating) => (
-                <label key={rating} className="flex items-center gap-2">
-                  <input type="checkbox" className="accent-[#a408c3]" />
-                  <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <span key={i} className={`text-${i < rating ? "[#a408c3]" : "gray-300"}`}>
-                        ★
-                      </span>
-                    ))}
-                    <span className="ml-1">{rating}.0 & up</span>
-                  </div>
-                </label>
-              ))}
-            </div>
           </div>
         </div>
 
@@ -169,7 +162,7 @@ export default function ShopPage() {
                 <option>Name: A to Z</option>
               </select>
             </div>
-            <span>{totalItems} Results Found</span>
+            <span>{filteredItems.length} Results Found</span>
           </div>
 
           {/* Loading State */}
@@ -182,8 +175,8 @@ export default function ShopPage() {
           {/* Products Grid */}
           {!isLoading && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {Array.isArray(items) && items.length > 0 ? (
-                items.map((item) => (
+              {filteredItems.length > 0 ? (
+                filteredItems.map((item) => (
                   <div key={item.item_id} className="bg-white rounded-lg shadow-md overflow-hidden">
                     <div className="relative">
                       <div className="aspect-square relative cursor-pointer" onClick={() => setSelectedProduct(item)}>
@@ -207,10 +200,10 @@ export default function ShopPage() {
                       <h3 className="font-semibold mb-2">{item.name}</h3>
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <span className="font-bold">${Number.parseFloat(item.price).toFixed(2)}</span>
+                          <span className="font-bold">{Number.parseFloat(item.price).toFixed(3)} TND</span>
                           {item.discount && (
                             <span className="text-gray-500 line-through">
-                              ${(Number.parseFloat(item.price) + Number.parseFloat(item.discount)).toFixed(2)}
+                              {(Number.parseFloat(item.price) + Number.parseFloat(item.discount)).toFixed(3)} TND
                             </span>
                           )}
                         </div>
@@ -221,13 +214,6 @@ export default function ShopPage() {
                         >
                           <ShoppingCart className="w-5 h-5" />
                         </button>
-                      </div>
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <span key={i} className={`text-${i < 4 ? "[#a408c3]" : "gray-300"}`}>
-                            ★
-                          </span>
-                        ))}
                       </div>
                     </div>
                   </div>

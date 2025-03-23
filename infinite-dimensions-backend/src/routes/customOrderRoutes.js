@@ -1,30 +1,25 @@
 const express = require('express');
-const router = express.Router();
-const multer = require('multer');
-const path = require('path');
-const { createCustomOrder } = require('../controllers/customOrderController');
-const { body } = require('express-validator');
 const { authenticateToken } = require('../middleware/auth');
+const { 
+  createCustomOrder, 
+  estimatePrice, 
+  uploadForCreate, 
+  uploadForEstimate 
+} = require('../controllers/customOrderController');
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/');
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
-  }
-});
-const upload = multer({ storage: storage });
+const router = express.Router();
 
+// POST /api/custom-orders (final order creation)
 router.post('/',
   authenticateToken,
-  upload.single('model'),
-  [
-    body('userId').notEmpty().withMessage('User ID is required'),
-    body('material').notEmpty().withMessage('Material is required'),
-    body('estimatedCost').isFloat({ gt: 0 }).withMessage('Estimated cost must be greater than 0')
-  ],
+  uploadForCreate,
   createCustomOrder
+);
+
+// POST /api/custom-orders/estimate (for slicing & price/time estimate)
+router.post('/estimate',
+  uploadForEstimate,
+  estimatePrice
 );
 
 module.exports = router;

@@ -41,6 +41,9 @@ const Header = () => {
             <Link href="/custom-order" className="text-[#A200C1] font-medium hover:text-purple-700 transition-colors">
               Custom Order
             </Link>
+            <Link href="/slicer" className="text-[#A200C1] font-medium hover:text-purple-700 transition-colors">
+              3D Slicer
+            </Link>
             <Link href="/contacts" className="text-[#A200C1] font-medium hover:text-purple-700 transition-colors">
               Contact Us
             </Link>
@@ -82,6 +85,9 @@ const Header = () => {
             </Link>
             <Link href="/custom-order" className="block py-2 text-[#A200C1] hover:text-purple-700">
               Custom Order
+            </Link>
+            <Link href="/slicer" className="block py-2 text-[#A200C1] hover:text-purple-700">
+              3D Slicer
             </Link>
             <Link href="/contacts" className="block py-2 text-[#A200C1] hover:text-purple-700">
               Contact Us

@@ -22,6 +22,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('combined'));
+app.head('/api/health-check', (req, res) => {
+  res.sendStatus(200);
+});
 
 app.use('/api/auth', authRoutes);
 app.use('/api/items', itemRoutes);
