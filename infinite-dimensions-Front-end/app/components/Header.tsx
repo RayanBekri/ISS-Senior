@@ -6,7 +6,7 @@ import { useState, useEffect, useCallback, memo } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { ShoppingCart, Search, Menu, X, ChevronDown, Printer, CuboidIcon as Cube, Layers } from "lucide-react"
+import { ShoppingCart, Search, Menu, X, ChevronDown, Printer, CuboidIcon as Cube, Layers, Users } from "lucide-react"
 import { useCart } from "@/app/contexts/CartContext"
 import AccountDropdown from "@/app/components/AccountDropdown"
 
@@ -146,6 +146,16 @@ const Header = memo(() => {
                     <div>
                       <div className="font-medium">3D Slicer</div>
                       <div className="text-xs text-gray-500">Get a price estimate</div>
+                    </div>
+                  </Link>
+                  <Link
+                    href="/consultation"
+                    className="flex items-center px-4 py-3 hover:bg-purple-50 rounded-md transition-colors"
+                  >
+                    <Users className="w-5 h-5 text-[#A200C1] mr-3" />
+                    <div>
+                      <div className="font-medium">Consultation</div>
+                      <div className="text-xs text-gray-500">Book an expert session</div>
                     </div>
                   </Link>
                 </div>
@@ -332,6 +342,14 @@ const Header = memo(() => {
             >
               <Layers className="w-4 h-4 mr-2" />
               3D Slicer
+            </Link>
+            <Link
+              href="/consultation"
+              className={`flex items-center py-3 pl-2 ${isActive("/consultation") ? "text-[#A200C1] font-semibold" : "text-gray-700"}`}
+              onClick={toggleMenu}
+            >
+              <Users className="w-4 h-4 mr-2" />
+              Consultation
             </Link>
           </div>
 

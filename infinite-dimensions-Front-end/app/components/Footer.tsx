@@ -173,6 +173,12 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link href="/consultation" className="text-white/80 hover:text-white flex items-center group">
+                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span>Consultation</span>
+                </Link>
+              </li>
+              <li>
                 <Link href="/slicer" className="text-white/80 hover:text-white flex items-center group">
                   <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
                   <span>3D Slicer</span>
@@ -204,6 +210,12 @@ const Footer = () => {
                 <Link href="/custom-order" className="text-white/80 hover:text-white flex items-center group">
                   <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
                   <span>Custom Prototyping</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/consultation" className="text-white/80 hover:text-white flex items-center group">
+                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span>Expert Consultation</span>
                 </Link>
               </li>
               <li>
