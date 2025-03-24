@@ -6,24 +6,21 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { DayPicker } from "react-day-picker"
-import { format, setHours, setMinutes, isSameDay, addMonths } from "date-fns"
-import { Calendar, Clock, Users, Video, AlertCircle, CheckCircle } from "lucide-react"
+import { format, parse, setHours, addMonths, isAfter } from "date-fns"
+import { Calendar, Clock, Users, Video, AlertCircle, CheckCircle, Loader2 } from "lucide-react"
 import { useAuth } from "@/app/contexts/AuthContext"
 import { consultationsApi } from "@/app/api/apiService"
-
-// Update the time slots display and enhance the UX
-
-// First, ensure the AVAILABLE_HOURS array is correctly defined (9 AM to 4 PM)
-const AVAILABLE_HOURS = [9, 10, 11, 12, 13, 14, 15, 16]
 
 export default function ConsultationPage() {
   const { user, token } = useAuth()
   const router = useRouter()
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
-  const [selectedTime, setSelectedTime] = useState<string | null>(null)
+  const [availableTimeSlots, setAvailableTimeSlots] = useState<string[]>([])
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null)
   const [consultationTopic, setConsultationTopic] = useState("")
   const [additionalNotes, setAdditionalNotes] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLoadingTimeSlots, setIsLoadingTimeSlots] = useState(false)
   const [showAuthMessage, setShowAuthMessage] = useState(false)
   const [submitSuccess, setSubmitSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -36,17 +33,135 @@ export default function ConsultationPage() {
   const toMonth = addMonths(fromMonth, 1)
 
   // Handler for date selection
-  const handleDateSelect = (date: Date | undefined) => {
+  const handleDateSelect = async (date: Date | undefined) => {
     setSelectedDate(date)
-    setSelectedTime(null) // Reset time when date changes
+    setSelectedTimeSlot(null) // Reset time when date changes
+
+    if (date) {
+      // Fetch available time slots for the selected date
+      await fetchAvailableTimeSlots(date)
+    } else {
+      setAvailableTimeSlots([])
+    }
   }
 
-  // Handler for time selection
-  const handleTimeSelect = (time: string) => {
-    setSelectedTime(time)
+  // Function to generate time slots for a given date
+  const generateTimeSlots = (date: Date): string[] => {
+    const slots = []
+    const hours = [9, 10, 11, 12, 13, 14, 15, 16, 17] // 9 AM to 5 PM
+
+    for (const hour of hours) {
+      const timeSlot = new Date(date)
+      timeSlot.setHours(hour, 0, 0, 0)
+
+      // Skip time slots in the past
+      if (isAfter(timeSlot, new Date())) {
+        // Format as YYYY-MM-DD HH:mm:ss
+        const formattedTimeSlot = format(timeSlot, "yyyy-MM-dd HH:mm:ss")
+        slots.push(formattedTimeSlot)
+      }
+    }
+
+    return slots
   }
 
-  // Replace the handleSubmit function with this updated version
+  // Function to fetch available time slots
+  const fetchAvailableTimeSlots = async (date: Date) => {
+    setIsLoadingTimeSlots(true)
+    setError(null)
+
+    try {
+      // Format date as YYYY-MM-DD for the API
+      const formattedDate = format(date, "yyyy-MM-dd")
+
+      // Call the API to get available time slots
+      const slots = await consultationsApi.getAvailableTimeSlots(formattedDate)
+
+      // Filter out any time slots that are in the past
+      const currentTime = new Date()
+      const validSlots: string[] = []
+
+      // Process each slot with proper type checking
+      if (Array.isArray(slots)) {
+        slots.forEach((slot) => {
+          try {
+            // Check if slot is an object with requested_time property
+            const timeString =
+              typeof slot === "object" && slot !== null && "requested_time" in slot
+                ? String(slot.requested_time)
+                : typeof slot === "string"
+                  ? slot
+                  : String(slot)
+
+            const slotDate = parse(timeString, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", new Date())
+
+            // Only add future time slots
+            if (isAfter(slotDate, currentTime)) {
+              // Convert to our expected format
+              const formattedSlot = format(slotDate, "yyyy-MM-dd HH:mm:ss")
+              validSlots.push(formattedSlot)
+            }
+          } catch (error) {
+            console.error("Error processing time slot:", slot, error)
+            // Skip invalid slots
+          }
+        })
+      } else {
+        console.warn("API did not return an array of time slots:", slots)
+      }
+
+      // If no valid slots are returned, generate default time slots (9 AM to 5 PM)
+      if (validSlots.length === 0) {
+        const defaultSlots = generateTimeSlots(date)
+        setAvailableTimeSlots(defaultSlots)
+      } else {
+        setAvailableTimeSlots(validSlots)
+      }
+    } catch (err) {
+      console.error("Error fetching time slots:", err)
+      setError(err instanceof Error ? err.message : "Failed to load available time slots")
+
+      // On error, still provide default time slots
+      const defaultSlots = generateTimeSlots(date)
+      setAvailableTimeSlots(defaultSlots)
+    } finally {
+      setIsLoadingTimeSlots(false)
+    }
+  }
+
+  // Handler for time slot selection
+  const handleTimeSlotSelect = (timeSlot: string) => {
+    setSelectedTimeSlot(timeSlot)
+  }
+
+  // Format time slot for display
+  const formatTimeSlot = (timeSlot: string): string => {
+    try {
+      // Parse the time slot string to a Date object
+      const date = parse(timeSlot, "yyyy-MM-dd HH:mm:ss", new Date())
+
+      // Format the time for display (e.g., "9:00 AM - 10:00 AM")
+      const startTime = format(date, "h:mm a")
+      const endTime = format(setHours(date, date.getHours() + 1), "h:mm a")
+
+      return `${startTime} - ${endTime}`
+    } catch (error) {
+      console.error("Error formatting time slot:", error)
+      return timeSlot // Return the original string if parsing fails
+    }
+  }
+
+  // Check if a time slot is in the past
+  const isTimeSlotInPast = (timeSlot: string): boolean => {
+    try {
+      const date = parse(timeSlot, "yyyy-MM-dd HH:mm:ss", new Date())
+      return isAfter(new Date(), date)
+    } catch (error) {
+      return false
+    }
+  }
+
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -55,7 +170,7 @@ export default function ConsultationPage() {
       return
     }
 
-    if (!selectedDate || !selectedTime) {
+    if (!selectedDate || !selectedTimeSlot) {
       setError("Please select both a date and time for your consultation")
       return
     }
@@ -64,17 +179,14 @@ export default function ConsultationPage() {
     setError(null)
 
     try {
-      // Parse the selected time
-      const [hours, minutes] = selectedTime.split(":").map(Number)
-      const consultationDateTime = new Date(selectedDate)
-      consultationDateTime.setHours(hours, minutes, 0, 0)
+      // Prepare notes with topic and additional notes
+      const notes = `Topic: ${consultationTopic}\n${additionalNotes}`
 
       // Prepare consultation request data
       const consultationData = {
-        client_id: user.user_id,
-        employee_id: 1, // Assuming a default employee ID for now
-        requested_time: consultationDateTime.toISOString(),
-        notes: `Topic: ${consultationTopic}\n${additionalNotes}`,
+        userId: user.user_id,
+        timeslot: selectedTimeSlot, // Already in the format "YYYY-MM-DD hh:mm:ss"
+        notes: notes,
       }
 
       // Submit consultation request
@@ -83,7 +195,8 @@ export default function ConsultationPage() {
 
       // Reset form
       setSelectedDate(undefined)
-      setSelectedTime(null)
+      setSelectedTimeSlot(null)
+      setAvailableTimeSlots([])
       setConsultationTopic("")
       setAdditionalNotes("")
     } catch (err) {
@@ -93,8 +206,7 @@ export default function ConsultationPage() {
     }
   }
 
-  // Update the auth message dialog to be more user-friendly
-
+  // Auth message dialog
   if (showAuthMessage) {
     return (
       <div className="container mx-auto px-4 py-16">
@@ -149,8 +261,7 @@ export default function ConsultationPage() {
     )
   }
 
-  // Update the success message to be more visually appealing
-
+  // Success message
   if (submitSuccess) {
     return (
       <div className="container mx-auto px-4 py-16">
@@ -166,7 +277,7 @@ export default function ConsultationPage() {
               details.
             </p>
 
-            {selectedDate && selectedTime && (
+            {selectedDate && selectedTimeSlot && (
               <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <h3 className="font-medium text-gray-900 mb-3">Appointment Details</h3>
                 <div className="space-y-2 text-sm">
@@ -176,10 +287,7 @@ export default function ConsultationPage() {
                   </div>
                   <div className="flex items-center">
                     <Clock className="w-4 h-4 text-gray-500 mr-2" />
-                    <span>
-                      {format(setHours(new Date(), Number.parseInt(selectedTime.split(":")[0])), "h:mm a")} -{" "}
-                      {format(setHours(new Date(), Number.parseInt(selectedTime.split(":")[0]) + 1), "h:mm a")}
-                    </span>
+                    <span>{formatTimeSlot(selectedTimeSlot)}</span>
                   </div>
                   <div className="flex items-center">
                     <Users className="w-4 h-4 text-gray-500 mr-2" />
@@ -219,30 +327,6 @@ export default function ConsultationPage() {
         </div>
       </div>
     )
-  }
-
-  // Update the getAvailableTimeSlots function to improve formatting and clarity
-  const getAvailableTimeSlots = () => {
-    if (!selectedDate) return []
-
-    // Only show future time slots for today
-    const now = new Date()
-    const isToday = isSameDay(selectedDate, now)
-    const currentHour = now.getHours()
-
-    return AVAILABLE_HOURS.map((hour) => {
-      const slotTime = setMinutes(setHours(new Date(), hour), 0)
-      const formattedTime = format(slotTime, "HH:mm")
-      // For today, disable past hours
-      const isPast = isToday && hour <= currentHour
-
-      return {
-        time: formattedTime,
-        hour: hour,
-        disabled: isPast,
-        label: format(slotTime, "h:mm a"), // Format as "9:00 am"
-      }
-    })
   }
 
   return (
@@ -297,7 +381,7 @@ export default function ConsultationPage() {
                     }}
                     footer={
                       <p className="text-sm text-gray-500 mt-4 text-center">
-                        Consultations are available Monday-Friday, 9:00 AM - 4:00 PM
+                        Consultations are available Monday-Friday
                       </p>
                     }
                   />
@@ -311,35 +395,46 @@ export default function ConsultationPage() {
                       <h2 className="text-xl font-semibold">Select a Time</h2>
                     </div>
 
-                    <div className="mb-2 text-sm text-gray-600">Available consultation hours: 9:00 AM - 4:00 PM</div>
+                    {isLoadingTimeSlots ? (
+                      <div className="flex justify-center items-center py-8">
+                        <Loader2 className="w-8 h-8 text-[#a408c3] animate-spin" />
+                        <span className="ml-2 text-gray-600">Loading available time slots...</span>
+                      </div>
+                    ) : availableTimeSlots.length === 0 ? (
+                      <div className="p-6 bg-gray-50 rounded-lg text-center">
+                        <p className="text-gray-600">No available time slots for this date.</p>
+                        <p className="text-sm text-gray-500 mt-2">Please select another date or check back later.</p>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="mb-2 text-sm text-gray-600">Select from available consultation time slots:</div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      {getAvailableTimeSlots().map(({ time, hour, disabled, label }) => (
-                        <button
-                          key={time}
-                          onClick={() => !disabled && handleTimeSelect(time)}
-                          className={`
-                            py-3 px-4 rounded-md text-center transition-all duration-200
-                            ${
-                              disabled
-                                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                                : selectedTime === time
-                                  ? "bg-[#a408c3] text-white shadow-md transform scale-105"
-                                  : "bg-white border border-gray-300 hover:border-[#a408c3] hover:shadow-sm"
-                            }
-                          `}
-                          disabled={disabled}
-                        >
-                          <span className="block font-medium">{label}</span>
-                          <span className="text-xs mt-1 block">{disabled ? "Unavailable" : "Available"}</span>
-                        </button>
-                      ))}
-                    </div>
-
-                    {isSameDay(selectedDate, new Date()) && (
-                      <p className="text-xs text-gray-500 mt-2">
-                        * Times earlier than current time are unavailable for today
-                      </p>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                          {availableTimeSlots.map((timeSlot) => {
+                            const isPast = isTimeSlotInPast(timeSlot)
+                            return (
+                              <button
+                                key={timeSlot}
+                                onClick={() => !isPast && handleTimeSlotSelect(timeSlot)}
+                                className={`
+                                  py-3 px-4 rounded-md text-center transition-all duration-200
+                                  ${
+                                    isPast
+                                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                                      : selectedTimeSlot === timeSlot
+                                        ? "bg-[#a408c3] text-white shadow-md transform scale-105"
+                                        : "bg-white border border-gray-300 hover:border-[#a408c3] hover:shadow-sm"
+                                  }
+                                `}
+                                disabled={isPast}
+                              >
+                                <span className="block font-medium">{formatTimeSlot(timeSlot)}</span>
+                                <span className="text-xs mt-1 block">{isPast ? "Unavailable" : "Available"}</span>
+                              </button>
+                            )
+                          })}
+                        </div>
+                      </>
                     )}
                   </div>
                 )}
@@ -387,7 +482,7 @@ export default function ConsultationPage() {
                     </p>
                   </div>
 
-                  {selectedDate && selectedTime && (
+                  {selectedDate && selectedTimeSlot && (
                     <div className="p-5 bg-purple-50 rounded-lg border border-purple-100">
                       <h3 className="font-medium text-[#a408c3] mb-3">Your Selected Appointment</h3>
                       <div className="space-y-3">
@@ -397,10 +492,7 @@ export default function ConsultationPage() {
                         </div>
                         <div className="flex items-center">
                           <Clock className="w-4 h-4 text-[#a408c3] mr-2" />
-                          <span className="font-medium">
-                            {format(setHours(new Date(), Number.parseInt(selectedTime.split(":")[0])), "h:mm a")} -{" "}
-                            {format(setHours(new Date(), Number.parseInt(selectedTime.split(":")[0]) + 1), "h:mm a")}
-                          </span>
+                          <span className="font-medium">{formatTimeSlot(selectedTimeSlot)}</span>
                         </div>
                         <div className="flex items-center">
                           <Video className="w-4 h-4 text-[#a408c3] mr-2" />
@@ -440,7 +532,7 @@ export default function ConsultationPage() {
                     <button
                       type="submit"
                       className="w-full bg-[#a408c3] text-white py-3 px-6 rounded-lg hover:bg-[#8a06a3] transition-colors disabled:opacity-70 flex items-center justify-center"
-                      disabled={isSubmitting || !selectedDate || !selectedTime || !consultationTopic}
+                      disabled={isSubmitting || !selectedDate || !selectedTimeSlot || !consultationTopic}
                     >
                       {isSubmitting ? (
                         <div className="flex items-center justify-center">

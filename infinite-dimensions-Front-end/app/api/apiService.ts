@@ -9,7 +9,6 @@ import type {
   Order,
   OrderResponse,
   CustomOrderEstimate,
-  ConsultationRequest,
   ConsultationResponse,
   Notification,
 } from "./types"
@@ -289,10 +288,26 @@ export const customOrdersApi = {
   },
 }
 
+// Update the consultationsApi object with the correct function
 // Consultations API
 export const consultationsApi = {
+  // Get available time slots for a specific date
+  getAvailableTimeSlots: async (date: string): Promise<string[]> => {
+    const response = await fetch(`${API_BASE_URL}/consultations/timeslots?date=${encodeURIComponent(date)}`, {
+      cache: "no-store",
+    })
+    return handleResponse<string[]>(response)
+  },
+
   // Request a consultation
-  requestConsultation: async (token: string, data: ConsultationRequest): Promise<ConsultationResponse> => {
+  requestConsultation: async (
+    token: string,
+    data: {
+      userId: number
+      timeslot: string
+      notes: string
+    },
+  ): Promise<ConsultationResponse> => {
     const response = await fetch(`${API_BASE_URL}/consultations`, {
       method: "POST",
       headers: {
