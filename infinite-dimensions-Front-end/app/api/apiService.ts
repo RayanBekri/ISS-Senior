@@ -335,3 +335,21 @@ export const notificationsApi = {
 }
 export const orderApi = ordersApi
 
+// Chatbot API
+export const chatbotApi = {
+  // Send a message to the chatbot
+  sendMessage: async (chat: string, history?: string[]): Promise<{ text: string }> => {
+    const response = await fetch(`${API_BASE_URL}/chatbot/query`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        chat,
+        history,
+      }),
+    })
+    return handleResponse<{ text: string }>(response)
+  },
+}
+

@@ -83,12 +83,12 @@ export default function ConsultationPage() {
 
       // Process each slot with proper type checking
       if (Array.isArray(slots)) {
-        slots.forEach((slot) => {
+        slots.forEach((slot: { requested_time?: string } | string) => {
           try {
             // Check if slot is an object with requested_time property
             const timeString =
               typeof slot === "object" && slot !== null && "requested_time" in slot
-                ? String(slot.requested_time)
+                ? String((slot as { requested_time: string }).requested_time)
                 : typeof slot === "string"
                   ? slot
                   : String(slot)
