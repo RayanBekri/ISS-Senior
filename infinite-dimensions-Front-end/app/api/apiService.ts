@@ -346,7 +346,6 @@ export const chatbotApi = {
       },
       body: JSON.stringify({
         chat,
-        history,
       }),
     })
     return handleResponse<{ text: string }>(response)

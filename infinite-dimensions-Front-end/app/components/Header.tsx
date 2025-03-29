@@ -83,93 +83,95 @@ const Header = memo(() => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-1">
-            <Link
-              href="/"
-              className={`px-3 py-2 rounded-md text-[#A200C1] font-medium hover:bg-purple-50 transition-colors ${
-                isActive("/") ? "bg-purple-50 font-semibold" : ""
-              }`}
-            >
-              Home
-            </Link>
-
-            {/* Services Dropdown */}
-            <div className="relative group">
-              <button
-                className={`flex items-center px-3 py-2 rounded-md text-[#A200C1] font-medium hover:bg-purple-50 transition-colors ${
-                  isActive("/shop") || isActive("/custom-order") || isActive("/slicer")
-                    ? "bg-purple-50 font-semibold"
-                    : ""
+          <nav className="hidden lg:flex items-center">
+            <div className="flex">
+              <Link
+                href="/"
+                className={`px-4 py-2 rounded-md text-[#A200C1] font-medium hover:bg-purple-50 transition-colors ${
+                  isActive("/") ? "bg-purple-50 font-semibold" : ""
                 }`}
-                onMouseEnter={() => setIsServicesOpen(true)}
-                onMouseLeave={() => setIsServicesOpen(false)}
-                onClick={() => setIsServicesOpen(!isServicesOpen)}
               >
-                Services <ChevronDown className="ml-1 w-4 h-4" />
-              </button>
+                Home
+              </Link>
 
-              <div
-                className={`absolute left-0 mt-1 w-64 bg-white rounded-lg shadow-lg overflow-hidden transition-all duration-300 ${
-                  isServicesOpen ? "opacity-100 visible" : "opacity-0 invisible"
-                }`}
-                onMouseEnter={() => setIsServicesOpen(true)}
-                onMouseLeave={() => setIsServicesOpen(false)}
-              >
-                <div className="p-2">
-                  <Link
-                    href="/shop"
-                    className="flex items-center px-4 py-3 hover:bg-purple-50 rounded-md transition-colors"
-                  >
-                    <Cube className="w-5 h-5 text-[#A200C1] mr-3" />
-                    <div>
-                      <div className="font-medium">Shop</div>
-                      <div className="text-xs text-gray-500">Browse our products</div>
-                    </div>
-                  </Link>
+              {/* Services Dropdown */}
+              <div className="relative group">
+                <button
+                  className={`flex items-center px-4 py-2 rounded-md text-[#A200C1] font-medium hover:bg-purple-50 transition-colors ${
+                    isActive("/shop") || isActive("/custom-order") || isActive("/slicer")
+                      ? "bg-purple-50 font-semibold"
+                      : ""
+                  }`}
+                  onMouseEnter={() => setIsServicesOpen(true)}
+                  onMouseLeave={() => setIsServicesOpen(false)}
+                  onClick={() => setIsServicesOpen(!isServicesOpen)}
+                >
+                  Services <ChevronDown className="ml-1 w-4 h-4" />
+                </button>
 
-                  <Link
-                    href="/custom-order"
-                    className="flex items-center px-4 py-3 hover:bg-purple-50 rounded-md transition-colors"
-                  >
-                    <Printer className="w-5 h-5 text-[#A200C1] mr-3" />
-                    <div>
-                      <div className="font-medium">Custom Order</div>
-                      <div className="text-xs text-gray-500">Request a custom print</div>
-                    </div>
-                  </Link>
+                <div
+                  className={`absolute left-0 mt-1 w-64 bg-white rounded-lg shadow-lg overflow-hidden transition-all duration-300 ${
+                    isServicesOpen ? "opacity-100 visible" : "opacity-0 invisible"
+                  }`}
+                  onMouseEnter={() => setIsServicesOpen(true)}
+                  onMouseLeave={() => setIsServicesOpen(false)}
+                >
+                  <div className="p-2">
+                    <Link
+                      href="/shop"
+                      className="flex items-center px-4 py-3 hover:bg-purple-50 rounded-md transition-colors"
+                    >
+                      <Cube className="w-5 h-5 text-[#A200C1] mr-3" />
+                      <div>
+                        <div className="font-medium">Shop</div>
+                        <div className="text-xs text-gray-500">Browse our products</div>
+                      </div>
+                    </Link>
 
-                  <Link
-                    href="/slicer"
-                    className="flex items-center px-4 py-3 hover:bg-purple-50 rounded-md transition-colors"
-                  >
-                    <Layers className="w-5 h-5 text-[#A200C1] mr-3" />
-                    <div>
-                      <div className="font-medium">3D Slicer</div>
-                      <div className="text-xs text-gray-500">Get a price estimate</div>
-                    </div>
-                  </Link>
-                  <Link
-                    href="/consultation"
-                    className="flex items-center px-4 py-3 hover:bg-purple-50 rounded-md transition-colors"
-                  >
-                    <Users className="w-5 h-5 text-[#A200C1] mr-3" />
-                    <div>
-                      <div className="font-medium">Consultation</div>
-                      <div className="text-xs text-gray-500">Book an expert session</div>
-                    </div>
-                  </Link>
+                    <Link
+                      href="/custom-order"
+                      className="flex items-center px-4 py-3 hover:bg-purple-50 rounded-md transition-colors"
+                    >
+                      <Printer className="w-5 h-5 text-[#A200C1] mr-3" />
+                      <div>
+                        <div className="font-medium">Custom Order</div>
+                        <div className="text-xs text-gray-500">Request a custom print</div>
+                      </div>
+                    </Link>
+
+                    <Link
+                      href="/slicer"
+                      className="flex items-center px-4 py-3 hover:bg-purple-50 rounded-md transition-colors"
+                    >
+                      <Layers className="w-5 h-5 text-[#A200C1] mr-3" />
+                      <div>
+                        <div className="font-medium">3D Slicer</div>
+                        <div className="text-xs text-gray-500">Get a price estimate</div>
+                      </div>
+                    </Link>
+                    <Link
+                      href="/consultation"
+                      className="flex items-center px-4 py-3 hover:bg-purple-50 rounded-md transition-colors"
+                    >
+                      <Users className="w-5 h-5 text-[#A200C1] mr-3" />
+                      <div>
+                        <div className="font-medium">Consultation</div>
+                        <div className="text-xs text-gray-500">Book an expert session</div>
+                      </div>
+                    </Link>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <Link
-              href="/contacts"
-              className={`px-3 py-2 rounded-md text-[#A200C1] font-medium hover:bg-purple-50 transition-colors ${
-                isActive("/contacts") ? "bg-purple-50 font-semibold" : ""
-              }`}
-            >
-              Contact Us
-            </Link>
+              <Link
+                href="/contacts"
+                className={`px-4 py-2 rounded-md text-[#A200C1] font-medium hover:bg-purple-50 transition-colors ${
+                  isActive("/contacts") ? "bg-purple-50 font-semibold" : ""
+                }`}
+              >
+                Contact Us
+              </Link>
+            </div>
           </nav>
 
           {/* Desktop Right Icons */}

@@ -3,12 +3,13 @@ const express = require('express');
 const router = express.Router();
 const { queryChatbot, streamChatbot } = require('../controllers/chatbotController');
 
-// POST /api/chatbot/query - Process a chat message and return AI-generated response.
-// This endpoint logs all messages to a file.
+// POST /api/chatbot/query
+// Accepts a JSON body: { chat: string, history?: Array<{ author: string, content: string }> }
+// Returns a complete AI-generated response. Logs user & bot messages to "chat_log.txt".
 router.post('/query', queryChatbot);
 
-// (Optional) POST /api/chatbot/stream - Stream the AI response back to the client.
-// Uncomment the following line if you want to enable streaming.
+// POST /api/chatbot/stream (Optional)
+// Streams partial AI responses back to the client.
 router.post('/stream', streamChatbot);
 
 module.exports = router;

@@ -1,11 +1,10 @@
 "use client"
-
+import { useState, useEffect, useRef } from "react"
 import type React from "react"
-import { useState, useEffect, useRef, useCallback } from "react"
-import { MessageSquare, Send, X, Bot, User, Trash2, ArrowDown, Volume2, VolumeX } from "lucide-react"
-import { usePathname } from "next/navigation"
-import { chatbotApi } from "../api/apiService"
+
+import { MessageSquare, X, RefreshCw, Send, ArrowDown } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
+import { chatbotApi } from "../api/apiService"
 
 // Types for our chat messages
 type MessageType = "user" | "bot" | "greeting" | "error" | "system"
@@ -17,18 +16,38 @@ interface Message {
   timestamp: Date
 }
 
-// Suggested questions for quick selection
+// Suggested questions with predefined answers
 const SUGGESTED_QUESTIONS = [
-  "What 3D printing services do you offer?",
-  "How much does 3D printing cost?",
-  "What materials can you print with?",
-  "How long does 3D printing take?",
-  "Can you help with custom designs?",
+  {
+    question: "What 3D printing services do you offer?",
+    answer:
+      "At Infinite Dimensions, we offer a wide range of 3D printing services including:\n\n• Custom prototyping\n• Small batch production\n• 3D design services\n• Various printing technologies (FDM, SLA, SLS)\n• Multiple material options\n• Post-processing and finishing\n\nYou can explore our services in detail on our website or ask me about any specific service!",
+  },
+  {
+    question: "How much does 3D printing cost?",
+    answer:
+      "The cost of 3D printing varies based on several factors:\n\n• Size and complexity of the model\n• Material used (PLA, ABS, PETG, Resin, etc.)\n• Print quality and layer height\n• Post-processing requirements\n• Quantity ordered\n\nSmall items typically start at 20-50 TND, while larger or more complex items can range from 100-500+ TND. For an accurate quote, you can upload your 3D model on our slicer page or contact us with your specific requirements.",
+  },
+  {
+    question: "What materials can you print with?",
+    answer:
+      "We offer a variety of materials to suit different project needs:\n\n• PLA - Standard, biodegradable, good for most projects\n• PLA+ - Enhanced durability and strength\n• ABS - Heat resistant, good for functional parts\n• PETG - Strong, flexible, and water-resistant\n• TPU - Flexible material for elastic parts\n• Nylon - Tough and durable for mechanical parts\n• Resin - High detail for precision models\n\nEach material has different properties and is suitable for different applications. I'd be happy to recommend the best material for your specific project!",
+  },
+  {
+    question: "How long does 3D printing take?",
+    answer:
+      "The printing time depends on several factors:\n\n• Size of the model - Larger models take longer\n• Complexity - Intricate details require more time\n• Print quality - Higher quality (lower layer height) takes longer\n• Material used - Some materials print slower than others\n\nTypical timeframes:\n• Small items (< 10cm): 2-8 hours\n• Medium items: 8-24 hours\n• Large or complex items: 1-3+ days\n\nWe also need to factor in design time, post-processing, and shipping if applicable. For urgent orders, we do offer expedited services at an additional cost.",
+  },
+  {
+    question: "Can you help with custom designs?",
+    answer:
+      "Yes, we offer comprehensive custom design services!\n\nOur team of experienced designers can:\n\n• Create 3D models from your sketches or ideas\n• Convert 2D drawings into 3D models\n• Modify existing 3D models to meet your requirements\n• Optimize designs for 3D printing\n• Provide design consultation\n\nThe design process typically involves an initial consultation, concept development, design iterations based on your feedback, and final optimization for printing. You can book a design consultation through our website or provide details about your project directly to us.",
+  },
 ]
 
 // Initial greeting messages
 const GREETING_MESSAGES = [
-  "👋 Hello! Welcome to Infinite Dimensions. How can I help you today?",
+  "👋 Hi there! How can I help you today?",
   "I can answer questions about our 3D printing services, materials, or help you get started with your project.",
 ]
 
@@ -44,546 +63,398 @@ export default function ChatBot() {
   const [hasGreeted, setHasGreeted] = useState(false)
   const [usageCount, setUsageCount] = useState(0)
   const [isLimitReached, setIsLimitReached] = useState(false)
-  const [showScrollButton, setShowScrollButton] = useState(false)
-  const [soundEnabled, setSoundEnabled] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(true)
+  const [showScrollButton, setShowScrollButton] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-  const messageSound = useRef<HTMLAudioElement | null>(null)
-  const pathname = usePathname()
 
-  // Initialize audio element
+  // Load previous messages from localStorage
   useEffect(() => {
-    messageSound.current = new Audio("/message-sound.mp3")
-    return () => {
-      if (messageSound.current) {
-        messageSound.current = null
+    const storedMessages = localStorage.getItem("chatbot_messages")
+    if (storedMessages) {
+      try {
+        const parsedMessages = JSON.parse(storedMessages)
+        // Convert strings back to Date objects
+        const validMessages = parsedMessages.map((msg: any) => ({
+          ...msg,
+          timestamp: new Date(msg.timestamp),
+        }))
+        setMessages(validMessages)
+        setHasGreeted(true)
+      } catch (error) {
+        console.error("Error parsing stored messages:", error)
       }
     }
-  }, [])
 
-  // Play sound when new bot message arrives
-  const playMessageSound = useCallback(() => {
-    if (soundEnabled && messageSound.current) {
-      messageSound.current.currentTime = 0
-      messageSound.current.play().catch((err) => console.error("Error playing sound:", err))
-    }
-  }, [soundEnabled])
-
-  // Load usage data from localStorage
-  useEffect(() => {
-    const today = new Date().toDateString()
+    // Check usage limit
+    const now = new Date()
+    const today = now.toISOString().split("T")[0]
     const storedUsage = localStorage.getItem(STORAGE_KEY)
-    const storedSoundSetting = localStorage.getItem("chatbot_sound")
-
-    if (storedSoundSetting !== null) {
-      setSoundEnabled(JSON.parse(storedSoundSetting))
-    }
 
     if (storedUsage) {
-      const { date, count } = JSON.parse(storedUsage)
-
-      if (date === today) {
-        setUsageCount(count)
-        setIsLimitReached(count >= DAILY_MESSAGE_LIMIT)
-      } else {
-        // Reset for new day
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ date: today, count: 0 }))
+      try {
+        const usage = JSON.parse(storedUsage)
+        if (usage.date === today) {
+          setUsageCount(usage.count)
+          setIsLimitReached(usage.count >= DAILY_MESSAGE_LIMIT)
+        } else {
+          // Reset for new day
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({ date: today, count: 0 }))
+        }
+      } catch (error) {
+        console.error("Error checking usage:", error)
       }
     } else {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ date: today, count: 0 }))
     }
   }, [])
 
-  // Show greeting when chat opens for the first time
+  // Show greeting if chat is opened and no messages exist
   useEffect(() => {
     if (isOpen && !hasGreeted && messages.length === 0) {
-      const greetingMessages = GREETING_MESSAGES.map((text, index) => ({
-        id: `greeting-${index}`,
+      const greetings = GREETING_MESSAGES.map((text, index) => ({
+        id: `greeting-${Date.now() + index}`,
         type: "greeting" as MessageType,
         text,
-        timestamp: new Date(),
+        timestamp: new Date(Date.now() + index * 800),
       }))
 
-      // Add greeting messages with a delay between them
-      const timer1 = setTimeout(() => {
-        setMessages([greetingMessages[0]])
-      }, 500)
-
-      const timer2 = setTimeout(() => {
-        setMessages((prev) => [...prev, greetingMessages[1]])
-        playMessageSound()
-      }, 2000)
-
-      setHasGreeted(true)
-
-      return () => {
-        clearTimeout(timer1)
-        clearTimeout(timer2)
-      }
-    }
-  }, [isOpen, hasGreeted, messages.length, playMessageSound])
-
-  // Focus input when chat opens
-  useEffect(() => {
-    if (isOpen && inputRef.current) {
+      // Add greeting messages with delay
       setTimeout(() => {
-        inputRef.current?.focus()
-      }, 300)
+        setMessages(greetings)
+        setHasGreeted(true)
+      }, 500)
     }
-  }, [isOpen])
+  }, [isOpen, hasGreeted, messages.length])
 
-  // Handle scroll and show scroll button when needed
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!chatContainerRef.current) return
-
-      const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current
-      const isScrolledUp = scrollHeight - scrollTop - clientHeight > 100
-
-      setShowScrollButton(isScrolledUp)
-    }
-
-    const container = chatContainerRef.current
-    if (container) {
-      container.addEventListener("scroll", handleScroll)
-      return () => container.removeEventListener("scroll", handleScroll)
-    }
-  }, [])
-
-  // Scroll to bottom when messages change
-  useEffect(() => {
-    if (messages.length > 0) {
-      scrollToBottom()
-    }
-  }, [messages])
-
-  // Scroll to bottom function
-  const scrollToBottom = () => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
-    }
-  }
-
-  // Load chat history from localStorage on mount
-  useEffect(() => {
-    const storedMessages = localStorage.getItem("chatbot_messages")
-    const storedHasGreeted = localStorage.getItem("chatbot_greeted")
-
-    if (storedMessages) {
-      try {
-        const parsedMessages = JSON.parse(storedMessages)
-        // Convert string timestamps back to Date objects
-        const messagesWithDates = parsedMessages.map((msg: any) => ({
-          ...msg,
-          timestamp: new Date(msg.timestamp),
-        }))
-        setMessages(messagesWithDates)
-      } catch (e) {
-        console.error("Failed to parse stored messages:", e)
-      }
-    }
-
-    if (storedHasGreeted) {
-      setHasGreeted(JSON.parse(storedHasGreeted))
-    }
-  }, [])
-
-  // Save messages to localStorage when they change
+  // Save messages to localStorage when updated
   useEffect(() => {
     if (messages.length > 0) {
       localStorage.setItem("chatbot_messages", JSON.stringify(messages))
     }
   }, [messages])
 
-  // Save hasGreeted state
+  // Auto-scroll to bottom when messages change
   useEffect(() => {
-    localStorage.setItem("chatbot_greeted", JSON.stringify(hasGreeted))
-  }, [hasGreeted])
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+    }
+  }, [messages, isTyping])
 
-  // Save sound setting
+  // Check if we need to show the scroll button
   useEffect(() => {
-    localStorage.setItem("chatbot_sound", JSON.stringify(soundEnabled))
-  }, [soundEnabled])
-
-  // Handle keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Escape key to close chat
-      if (e.key === "Escape" && isOpen) {
-        setIsOpen(false)
+    const checkScroll = () => {
+      if (chatContainerRef.current) {
+        const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current
+        const isNearBottom = scrollHeight - scrollTop - clientHeight < 100
+        setShowScrollButton(!isNearBottom)
       }
     }
 
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
+    const container = chatContainerRef.current
+    if (container) {
+      container.addEventListener("scroll", checkScroll)
+      return () => container.removeEventListener("scroll", checkScroll)
+    }
   }, [isOpen])
 
-  // Clear chat history
-  const clearChat = () => {
-    setMessages([])
-    setHasGreeted(false)
-    localStorage.removeItem("chatbot_messages")
-    localStorage.removeItem("chatbot_greeted")
+  // Handle form submission
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault()
 
-    // Add system message
-    const systemMessage: Message = {
-      id: `system-${Date.now()}`,
-      type: "system",
-      text: "Chat history has been cleared.",
-      timestamp: new Date(),
+    // Trim input and validate
+    const message = inputValue.trim()
+    if (!message || isTyping || isLimitReached) return
+
+    // Check usage limit
+    if (usageCount >= DAILY_MESSAGE_LIMIT) {
+      setIsLimitReached(true)
+      const limitMessage: Message = {
+        id: `system-${Date.now()}`,
+        type: "system",
+        text: "You've reached the daily message limit. Please try again tomorrow or contact us directly.",
+        timestamp: new Date(),
+      }
+      setMessages((prev) => [...prev, limitMessage])
+      return
     }
-    setMessages([systemMessage])
-  }
-
-  // Toggle sound
-  const toggleSound = () => {
-    setSoundEnabled((prev) => !prev)
-  }
-
-  // Handle suggested question click
-  const handleSuggestedQuestion = (question: string) => {
-    setInputValue(question)
-    setShowSuggestions(false)
-    // Focus the input
-    inputRef.current?.focus()
-  }
-
-  // Update the handleSendMessage function to match the API's expected format
-  const handleSendMessage = async (e?: React.FormEvent) => {
-    e?.preventDefault()
-
-    if (!inputValue.trim() || isTyping || isLimitReached) return
 
     // Create user message
     const userMessage: Message = {
       id: `user-${Date.now()}`,
       type: "user",
-      text: inputValue.trim(),
+      text: message,
       timestamp: new Date(),
     }
 
-    setMessages((prev) => [...prev, userMessage])
+    // Update UI
     setInputValue("")
     setIsTyping(true)
     setShowSuggestions(false)
+    setMessages((prev) => [...prev, userMessage])
 
-    let responseText = "" // Declare responseText here
+    // Get 5 most recent messages for context
+    const recentMessages = [...messages.slice(-5), userMessage]
+      .filter((msg) => msg.type === "user" || msg.type === "bot")
+      .map((msg) => msg.text)
 
     try {
-      // Update usage count
+      // Increment usage
       const newCount = usageCount + 1
       setUsageCount(newCount)
 
-      const today = new Date().toDateString()
+      // Update localStorage
+      const now = new Date()
+      const today = now.toISOString().split("T")[0]
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ date: today, count: newCount }))
 
-      if (newCount >= DAILY_MESSAGE_LIMIT) {
-        setIsLimitReached(true)
-      }
+      // Call the API
+      const response = await chatbotApi.sendMessage(message, recentMessages)
 
-      // Get previous messages for context
-      const previousMessages = messages
-        .filter((msg) => msg.type === "user" || msg.type === "bot")
-        .slice(-5)
-        .map((msg) => msg.text)
-
-      // Call the chatbot API service
-      try {
-        const data = await chatbotApi.sendMessage(userMessage.text, previousMessages)
-        responseText = data.text || "I'm sorry, I couldn't process your request at this time."
-      } catch (apiError) {
-        console.error("API call failed:", apiError)
-        responseText = "I'm having trouble connecting to my knowledge base. Please try again in a moment."
-      }
-
-      // Create bot response
+      // Create bot message
       const botMessage: Message = {
         id: `bot-${Date.now()}`,
         type: "bot",
-        text: responseText,
+        text: response.text || "I'm sorry, I couldn't process your request at this time.",
         timestamp: new Date(),
       }
 
       setMessages((prev) => [...prev, botMessage])
-      playMessageSound()
     } catch (error) {
-      console.error("Error processing message:", error)
-
-      // Error message
+      console.error("Error sending message:", error)
       const errorMessage: Message = {
         id: `error-${Date.now()}`,
         type: "error",
-        text: "Sorry, I encountered an error processing your request. Please try again later.",
+        text: "Sorry, I'm having trouble connecting right now. Please try again later.",
         timestamp: new Date(),
       }
-
       setMessages((prev) => [...prev, errorMessage])
     } finally {
       setIsTyping(false)
     }
   }
 
-  // Format timestamp
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+  // Handle key press
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault()
+      handleSubmit()
+    }
+  }
+
+  // Handle suggested question click
+  const handleSuggestedQuestion = (questionObj: (typeof SUGGESTED_QUESTIONS)[0]) => {
+    // Create user message with the question
+    const userMessage: Message = {
+      id: `user-${Date.now()}`,
+      type: "user",
+      text: questionObj.question,
+      timestamp: new Date(),
+    }
+
+    // Create bot message with the predefined answer
+    const botMessage: Message = {
+      id: `bot-${Date.now() + 1000}`, // Add offset to ensure unique ID
+      type: "bot",
+      text: questionObj.answer,
+      timestamp: new Date(Date.now() + 1000), // Add 1 second to ensure it appears after
+    }
+
+    // Add both messages
+    setMessages((prev) => [...prev, userMessage, botMessage])
+    setShowSuggestions(false)
+  }
+
+  // Clear chat history
+  const handleClearChat = () => {
+    setMessages([])
+    localStorage.removeItem("chatbot_messages")
+    setShowSuggestions(true)
+    setHasGreeted(false)
+  }
+
+  // Scroll to bottom
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+    }
+  }
+
+  // Format message text with newlines
+  const formatMessageText = (text: string) => {
+    return text.split("\n").map((line, i) => (
+      <span key={i}>
+        {line}
+        {i < text.split("\n").length - 1 && <br />}
+      </span>
+    ))
   }
 
   return (
     <>
       {/* Chat button */}
-      <motion.button
-        onClick={() => setIsOpen((prev) => !prev)}
-        className={`fixed z-50 bottom-6 right-6 p-4 rounded-full shadow-lg transition-colors ${
-          isOpen ? "bg-red-500" : "bg-[#a408c3]"
-        }`}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="fixed bottom-6 right-6 z-40 bg-[#a408c3] text-white p-4 rounded-full shadow-lg hover:bg-[#8a06a3] transition-all"
         aria-label={isOpen ? "Close chat" : "Open chat"}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.95 }}
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
       >
-        {isOpen ? (
-          <X className="h-6 w-6 text-white" />
-        ) : (
-          <div className="relative">
-            <MessageSquare className="h-6 w-6 text-white" />
-            {!hasGreeted && (
-              <span className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-pulse"></span>
-            )}
-          </div>
-        )}
-      </motion.button>
+        {isOpen ? <X size={24} /> : <MessageSquare size={24} />}
+      </button>
 
       {/* Chat window */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="fixed z-40 bottom-24 right-6 w-80 sm:w-96 bg-white rounded-lg shadow-xl overflow-hidden"
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2 }}
+            className="fixed bottom-24 right-6 z-40 w-full max-w-md bg-white rounded-lg shadow-xl border border-gray-200 flex flex-col"
+            style={{ maxHeight: "calc(100vh - 140px)" }}
           >
             {/* Chat header */}
-            <div className="bg-[#a408c3] text-white p-4 flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="bg-white/20 p-1.5 rounded-full mr-2">
-                  <Bot className="h-5 w-5" />
-                </div>
-                <div>
-                  <h3 className="font-medium">Infinite Dimensions Assistant</h3>
-                  <p className="text-xs text-white/70">Ask me anything about 3D printing</p>
-                </div>
+            <div className="flex items-center justify-between bg-[#a408c3] text-white p-4 rounded-t-lg">
+              <div>
+                <h3 className="font-semibold">Infinite Dimensions Chat</h3>
+                <p className="text-xs opacity-80">Ask about our 3D printing services</p>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex gap-2">
                 <button
-                  onClick={toggleSound}
-                  className="text-white/80 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-colors"
-                  title={soundEnabled ? "Mute sound" : "Enable sound"}
+                  onClick={handleClearChat}
+                  className="p-2 rounded-full hover:bg-white/20 transition-colors"
+                  aria-label="Clear chat"
                 >
-                  {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
-                </button>
-                <button
-                  onClick={clearChat}
-                  className="text-white/80 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-colors"
-                  title="Clear chat history"
-                >
-                  <Trash2 className="h-4 w-4" />
+                  <RefreshCw size={18} />
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="text-white/80 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-colors"
-                  title="Close chat"
+                  className="p-2 rounded-full hover:bg-white/20 transition-colors"
+                  aria-label="Close chat"
                 >
-                  <X className="h-4 w-4" />
+                  <X size={18} />
                 </button>
               </div>
             </div>
 
             {/* Chat messages */}
-            <div className="h-96 overflow-y-auto p-4 bg-gray-50" ref={chatContainerRef}>
-              {messages.length === 0 && !isTyping && (
-                <div className="flex flex-col items-center justify-center h-full text-gray-400 text-center">
-                  <div className="bg-[#a408c3]/10 p-3 rounded-full mb-3">
-                    <Bot className="h-8 w-8 text-[#a408c3]" />
-                  </div>
-                  <p className="font-medium text-gray-600 mb-2">Welcome to Infinite Dimensions</p>
-                  <p className="text-sm text-gray-500 mb-6">How can I help you today?</p>
-
-                  <div className="w-full max-w-xs">
-                    {SUGGESTED_QUESTIONS.map((question, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleSuggestedQuestion(question)}
-                        className="w-full text-left mb-2 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:border-[#a408c3] hover:bg-[#a408c3]/5 transition-colors text-sm"
-                      >
-                        {question}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
+            <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4" style={{ maxHeight: "400px" }}>
               {messages.map((message) => (
                 <motion.div
                   key={message.id}
-                  className={`mb-4 ${
-                    message.type === "user"
-                      ? "flex justify-end"
-                      : message.type === "system"
-                        ? "flex justify-center"
-                        : "flex justify-start"
-                  }`}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
+                  className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}
                 >
-                  {message.type === "system" ? (
-                    <div className="bg-gray-100 text-gray-600 text-xs py-1 px-3 rounded-full">{message.text}</div>
-                  ) : (
-                    <>
-                      {message.type !== "user" && message.type !== "error" && (
-                        <div className="w-8 h-8 rounded-full bg-[#a408c3]/10 flex items-center justify-center flex-shrink-0 mr-2">
-                          <Bot className="h-4 w-4 text-[#a408c3]" />
-                        </div>
-                      )}
-
-                      <div
-                        className={`max-w-[75%] rounded-2xl p-3 shadow-sm ${
-                          message.type === "user"
-                            ? "bg-[#a408c3] text-white rounded-br-none"
-                            : message.type === "error"
-                              ? "bg-red-100 text-red-800 rounded-bl-none"
-                              : "bg-white border border-gray-100 text-gray-800 rounded-bl-none"
-                        }`}
-                      >
-                        <p className="text-sm whitespace-pre-wrap">{message.text}</p>
-                        <p className="text-xs mt-1 opacity-70 text-right">{formatTime(message.timestamp)}</p>
-                      </div>
-
-                      {message.type === "user" && (
-                        <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0 ml-2">
-                          <User className="h-4 w-4 text-gray-600" />
-                        </div>
-                      )}
-                    </>
-                  )}
+                  <div
+                    className={`max-w-[80%] px-4 py-3 rounded-2xl ${
+                      message.type === "user"
+                        ? "bg-[#a408c3] text-white rounded-tr-none"
+                        : message.type === "error"
+                          ? "bg-red-100 text-red-800 rounded-tl-none"
+                          : message.type === "system"
+                            ? "bg-yellow-100 text-yellow-800 rounded-tl-none"
+                            : "bg-gray-100 text-gray-800 rounded-tl-none"
+                    }`}
+                  >
+                    <p className="text-sm">{formatMessageText(message.text)}</p>
+                    <span className="text-xs opacity-70 mt-1 block text-right">
+                      {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                    </span>
+                  </div>
                 </motion.div>
               ))}
 
+              {/* Typing indicator */}
               {isTyping && (
-                <motion.div
-                  className="flex justify-start mb-4"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <div className="w-8 h-8 rounded-full bg-[#a408c3]/10 flex items-center justify-center flex-shrink-0 mr-2">
-                    <Bot className="h-4 w-4 text-[#a408c3]" />
-                  </div>
-                  <div className="bg-white border border-gray-100 rounded-2xl rounded-bl-none p-3 shadow-sm">
-                    <div className="flex space-x-1">
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
+                  <div className="bg-gray-100 px-4 py-3 rounded-2xl rounded-tl-none">
+                    <div className="flex space-x-2">
+                      <div className="h-2 w-2 bg-gray-400 rounded-full animate-bounce"></div>
                       <div
-                        className="w-2 h-2 bg-[#a408c3] rounded-full animate-bounce"
-                        style={{ animationDelay: "0ms" }}
+                        className="h-2 w-2 bg-gray-400 rounded-full animate-bounce"
+                        style={{ animationDelay: "0.2s" }}
                       ></div>
                       <div
-                        className="w-2 h-2 bg-[#a408c3] rounded-full animate-bounce"
-                        style={{ animationDelay: "150ms" }}
-                      ></div>
-                      <div
-                        className="w-2 h-2 bg-[#a408c3] rounded-full animate-bounce"
-                        style={{ animationDelay: "300ms" }}
+                        className="h-2 w-2 bg-gray-400 rounded-full animate-bounce"
+                        style={{ animationDelay: "0.4s" }}
                       ></div>
                     </div>
                   </div>
                 </motion.div>
               )}
 
+              {/* Suggested questions */}
+              {showSuggestions && !isTyping && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.5 }}
+                  className="mt-4"
+                >
+                  <p className="text-sm text-gray-500 mb-2">Frequently asked questions:</p>
+                  <div className="flex overflow-x-auto pb-2 space-x-2 scrollbar-hide">
+                    {SUGGESTED_QUESTIONS.map((q, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleSuggestedQuestion(q)}
+                        className="whitespace-nowrap flex-shrink-0 px-3 py-2 bg-[#f9e8ff] text-[#a408c3] rounded-full text-sm hover:bg-[#f0d1ff] transition-colors"
+                      >
+                        {q.question}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Scroll anchor */}
               <div ref={messagesEndRef} />
             </div>
 
             {/* Scroll to bottom button */}
             {showScrollButton && (
-              <button
+              <motion.button
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                className="absolute bottom-20 right-4 p-2 bg-[#a408c3] text-white rounded-full shadow-md"
                 onClick={scrollToBottom}
-                className="absolute bottom-24 right-4 bg-[#a408c3] text-white p-2 rounded-full shadow-md hover:bg-[#8a06a3] transition-colors"
                 aria-label="Scroll to bottom"
               >
-                <ArrowDown className="h-4 w-4" />
-              </button>
+                <ArrowDown size={18} />
+              </motion.button>
             )}
 
-            {/* Suggested questions */}
-            {showSuggestions && messages.length > 0 && (
-              <div className="px-4 py-2 bg-gray-50 border-t border-gray-200 overflow-x-auto whitespace-nowrap">
-                <div className="flex space-x-2">
-                  {SUGGESTED_QUESTIONS.slice(0, 3).map((question, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleSuggestedQuestion(question)}
-                      className="px-3 py-1 bg-white border border-gray-200 rounded-full text-xs hover:border-[#a408c3] hover:bg-[#a408c3]/5 transition-colors flex-shrink-0"
-                    >
-                      {question}
-                    </button>
-                  ))}
+            {/* Input area */}
+            <div className="p-4 border-t border-gray-200">
+              {isLimitReached ? (
+                <div className="bg-yellow-50 text-yellow-800 p-3 rounded-lg text-sm">
+                  You've reached the daily message limit. Please try again tomorrow or contact us directly.
                 </div>
-              </div>
-            )}
-
-            {/* Usage limit warning */}
-            {usageCount > DAILY_MESSAGE_LIMIT * 0.7 && !isLimitReached && (
-              <div className="px-4 py-2 bg-yellow-50 border-t border-yellow-100">
-                <p className="text-xs text-yellow-800">
-                  You have used {usageCount}/{DAILY_MESSAGE_LIMIT} messages today. For detailed assistance, please
-                  consider scheduling a consultation.
-                </p>
-              </div>
-            )}
-
-            {/* Limit reached message */}
-            {isLimitReached && (
-              <div className="px-4 py-2 bg-red-50 border-t border-red-100">
-                <p className="text-xs text-red-800">
-                  You've reached your daily message limit. Please contact us directly or schedule a consultation for
-                  further assistance.
-                </p>
-              </div>
-            )}
-
-            {/* Chat input */}
-            <form onSubmit={handleSendMessage} className="border-t border-gray-200 p-4 flex items-center">
-              <input
-                type="text"
-                ref={inputRef}
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onFocus={() => setShowSuggestions(true)}
-                placeholder={isLimitReached ? "Message limit reached" : "Type your message..."}
-                className="flex-1 border border-gray-300 rounded-l-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#a408c3] focus:border-transparent"
-                disabled={isTyping || isLimitReached}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault()
-                    handleSendMessage()
-                  }
-                }}
-              />
-              <button
-                type="submit"
-                className={`bg-[#a408c3] text-white px-4 py-3 rounded-r-lg transition-all ${
-                  isTyping || !inputValue.trim() || isLimitReached
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:bg-[#8a06a3] hover:shadow-md"
-                }`}
-                disabled={isTyping || !inputValue.trim() || isLimitReached}
-              >
-                <Send className="h-5 w-5" />
-              </button>
-            </form>
+              ) : (
+                <form onSubmit={handleSubmit} className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    ref={inputRef}
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    placeholder="Type your message..."
+                    className="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#a408c3]"
+                    disabled={isTyping}
+                  />
+                  <button
+                    type="submit"
+                    disabled={!inputValue.trim() || isTyping}
+                    className="bg-[#a408c3] text-white p-2 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
+                    aria-label="Send message"
+                  >
+                    <Send size={20} />
+                  </button>
+                </form>
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
