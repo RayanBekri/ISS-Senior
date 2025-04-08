@@ -60,14 +60,25 @@ export interface Item {
 
 // Order types
 export interface Order {
+  order_id?: number
   client_id: number
   status: "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED"
-  payment_method: "CASH" | "CREDIT_CARD" | "BANK_TRANSFER"
+  payment_method: "CASH" | "CHECK" | "BANK_TRANSFER"
   delivery_address: string
   postal_code: string
   city: string
   comments?: string
   total_cost: number
+  items?: OrderItem[]
+  created_at?: string
+  updated_at?: string
+}
+
+// Add the OrderItem interface
+export interface OrderItem {
+  item_id: number
+  quantity: number
+  unit_price: number
 }
 
 export interface OrderResponse {
@@ -112,4 +123,3 @@ export interface Notification {
   created_at: string
   updated_at: string
 }
-

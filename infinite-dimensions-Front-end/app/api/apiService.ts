@@ -3,9 +3,7 @@ import type {
   Item,
   LoginRequest,
   RegisterRequest,
-  PasswordResetRequest,
-  PasswordResetConfirmRequest,
-  PasswordUpdateRequest,
+  PasswordUpdateRequest, // Changed from ChangePasswordRequest
   Order,
   OrderResponse,
   CustomOrderEstimate,
@@ -49,8 +47,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
 
 // Authentication API
 export const authApi = {
-  // Register a new user
-  register: async (data: RegisterRequest): Promise<{ message: string }> => {
+  register: async (data: RegisterRequest): Promise<AuthResponse> => {
     const response = await fetch(`${API_BASE_URL}/auth/register`, {
       method: "POST",
       headers: {
@@ -58,90 +55,43 @@ export const authApi = {
       },
       body: JSON.stringify(data),
     })
-    return handleResponse<{ message: string }>(response)
+    return handleResponse<AuthResponse>(response)
   },
 
-  // Login user
   login: async (data: LoginRequest): Promise<AuthResponse> => {
-    console.log("Sending login request to:", `${API_BASE_URL}/auth/login`)
-    console.log("With data:", JSON.stringify(data))
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
 
-    try {
-      // First check if we can reach the API at all
-      const isApiReachable = await checkApiConnectivity().catch(() => false)
-      if (!isApiReachable) {
-        throw new Error("Cannot connect to the server. Please check your internet connection and try again.")
-      }
+    const responseData = await handleResponse<{ token: string }>(response)
 
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-        credentials: "include", // Include cookies in the request
-        mode: "cors", // Explicitly set CORS mode
-        cache: "no-cache", // Don't use cache
-      })
+    // Extract user data from JWT token
+    const token = responseData.token
+    const payload = JSON.parse(atob(token.split(".")[1]))
 
-      console.log("Login response status:", response.status)
-
-      // Handle non-OK responses
-      if (!response.ok) {
-        // Try to get error details
-        const errorText = await response.text()
-        console.error("Login error response:", errorText)
-
-        let errorMessage = `Login failed: ${response.status}`
-        try {
-          const errorData = JSON.parse(errorText)
-          if (errorData.message) {
-            errorMessage = errorData.message
-          }
-        } catch (e) {
-          // If parsing fails, use the status text
-          errorMessage = `Login failed: ${response.statusText || response.status}`
-        }
-
-        throw new Error(errorMessage)
-      }
-
-      // Parse successful response
-      const responseText = await response.text()
-      console.log("Login response text:", responseText)
-
-      let responseData
-      try {
-        responseData = JSON.parse(responseText)
-      } catch (e) {
-        console.error("Failed to parse login response:", e)
-        throw new Error(`Invalid response format: ${responseText}`)
-      }
-
-      // Validate response structure
-      if (!responseData.token || !responseData.user) {
-        console.error("Invalid login response structure:", responseData)
-        throw new Error("Invalid response format from server: missing token or user data")
-      }
-
-      console.log("Login successful:", responseData)
-      return responseData
-    } catch (error) {
-      // Handle network errors specifically
-      if (error instanceof TypeError && error.message.includes("NetworkError")) {
-        console.error("Network error during login:", error)
-        throw new Error(
-          "Network error: Cannot connect to the server. Please check your internet connection and try again.",
-        )
-      }
-
-      console.error("Login API error:", error)
-      throw error
+    // Construct user object from JWT payload
+    const user = {
+      user_id: payload.user_id,
+      email: payload.email,
+      role: payload.role,
+      is_company: Boolean(payload.is_company),
+      is_approved: Boolean(payload.is_approved),
+      first_name: payload.first_name,
+      last_name: payload.last_name,
+      company_name: payload.company_name,
+      company_tax_number: payload.company_tax_number,
+      created_at: payload.created_at,
+      updated_at: payload.updated_at,
     }
+
+    return { token, user }
   },
 
-  // Get current user
-  getCurrentUser: async (token: string): Promise<AuthResponse> => {
+  getCurrentUser: async (token: string) => {
     const response = await fetch(`${API_BASE_URL}/auth/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -150,33 +100,8 @@ export const authApi = {
     return handleResponse<AuthResponse>(response)
   },
 
-  // Request password reset
-  requestPasswordReset: async (data: PasswordResetRequest): Promise<{ message: string; resetToken?: string }> => {
-    const response = await fetch(`${API_BASE_URL}/auth/request-password-reset`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-    return handleResponse<{ message: string; resetToken?: string }>(response)
-  },
-
-  // Reset password with token
-  resetPassword: async (data: PasswordResetConfirmRequest): Promise<{ message: string }> => {
-    const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-    return handleResponse<{ message: string }>(response)
-  },
-
-  // Update password (authenticated)
-  updatePassword: async (token: string, data: PasswordUpdateRequest): Promise<{ message: string }> => {
-    const response = await fetch(`${API_BASE_URL}/auth/update-password`, {
+  changePassword: async (token: string, data: PasswordUpdateRequest) => {
+    const response = await fetch(`${API_BASE_URL}/auth/change-password`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -220,6 +145,16 @@ export const ordersApi = {
       },
     })
     return handleResponse<Order[]>(response)
+  },
+  createCustomOrder: async (token: string, orderData: FormData): Promise<OrderResponse> => {
+    const response = await fetch(`${API_BASE_URL}/custom-orders/checkout`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: orderData,
+    })
+    return handleResponse<OrderResponse>(response)
   },
 }
 
@@ -346,9 +281,9 @@ export const chatbotApi = {
       },
       body: JSON.stringify({
         chat,
+        history,
       }),
     })
     return handleResponse<{ text: string }>(response)
   },
 }
-

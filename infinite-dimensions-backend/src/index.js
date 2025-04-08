@@ -23,7 +23,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('combined'));
-app.head('/api/health-check', (req, res) => {
+app.get('/api/health-check', (req, res) => {
   res.sendStatus(200);
 });
 

@@ -1,12 +1,18 @@
 "use client"
 
 import type React from "react"
-import { useState, useRef } from "react"
+import { useState, useRef, useCallback } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Upload, Info, AlertCircle, CheckCircle } from "lucide-react"
 import { useAuth } from "../contexts/AuthContext"
 import { customOrdersApi } from "../api/apiService"
+
+// Import the ModelViewer component
+import dynamic from "next/dynamic"
+
+// Add this after the other imports
+const ModelViewer = dynamic(() => import("../slicer/model-viewer"), { ssr: false })
 
 export default function CustomOrder() {
   const { user, token } = useAuth()
@@ -26,26 +32,49 @@ export default function CustomOrder() {
   const [estimate, setEstimate] = useState<{ time: number; price: number } | null>(null)
   const [submitSuccess, setSubmitSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // Add fileUrl state
+  const [fileUrl, setFileUrl] = useState<string | null>(null)
+  const [priceEstimate, setPriceEstimate] = useState<number | null>(null)
+  const [slicingResult, setSlicingResult] = useState<any | null>(null)
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const selectedFile = e.target.files[0]
+  // Update the handleFileChange function to create a file URL
+  const handleFileChange = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      setError(null)
+      setPriceEstimate(null)
+      setSlicingResult(null)
 
-      // Check file type
-      const fileExtension = selectedFile.name.split(".").pop()?.toLowerCase()
-      if (fileExtension !== "stl" && fileExtension !== "3mf") {
-        setError("Please upload only STL or 3MF files")
-        return
+      // Clean up previous file URL if it exists
+      if (fileUrl) {
+        URL.revokeObjectURL(fileUrl)
+        setFileUrl(null)
       }
 
-      setFile(selectedFile)
+      if (e.target.files && e.target.files[0]) {
+        const selectedFile = e.target.files[0]
 
-      // Get price estimate
-      if (fileExtension === "stl") {
-        await getEstimate(selectedFile)
+        // Check file type - only allow STL
+        const fileExtension = selectedFile.name.split(".").pop()?.toLowerCase()
+        if (fileExtension !== "stl") {
+          setError("Please upload an STL file only")
+          return
+        }
+
+        // Check file size (max 50MB)
+        if (selectedFile.size > 50 * 1024 * 1024) {
+          setError("File size exceeds 50MB limit")
+          return
+        }
+
+        setFile(selectedFile)
+
+        // Create a blob URL for the file - this helps with CORS issues
+        const url = URL.createObjectURL(selectedFile)
+        setFileUrl(url)
       }
-    }
-  }
+    },
+    [fileUrl],
+  )
 
   // Update the getEstimate function to better handle file uploads
   const getEstimate = async (selectedFile: File) => {
@@ -118,6 +147,39 @@ export default function CustomOrder() {
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  // Add a function to proceed to checkout
+  const proceedToCheckout = () => {
+    if (!user) {
+      setShowAuthMessage(true)
+      return
+    }
+
+    if (!file) {
+      setError("Please upload an STL file first")
+      return
+    }
+
+    // Save custom order data to session storage
+    const customOrderData = {
+      material: material || "PLA",
+      color,
+      strength,
+      model: file,
+      additionalInfo,
+      slicerEstimate:
+        slicingResult && priceEstimate
+          ? {
+              printTimeMinutes: slicingResult.printTimeMinutes,
+              materialUsageGrams: slicingResult.materialUsageGrams,
+              price: priceEstimate,
+            }
+          : null,
+    }
+
+    sessionStorage.setItem("customOrderData", JSON.stringify(customOrderData))
+    router.push("/checkout")
   }
 
   // If showing auth message, display that instead of the form
@@ -279,6 +341,17 @@ export default function CustomOrder() {
                 </div>
               )}
             </div>
+
+            {/* 3D Model Preview - Only render when needed */}
+            {fileUrl && (
+              <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+                <h2 className="text-xl font-semibold mb-4">3D Model Preview</h2>
+                <ModelViewer fileUrl={fileUrl} />
+                <p className="text-sm text-gray-500 mt-4 text-center">
+                  You can rotate, zoom, and pan to inspect your model
+                </p>
+              </div>
+            )}
 
             {/* Material Knowledge */}
             <div className="space-y-2">
@@ -450,20 +523,31 @@ export default function CustomOrder() {
             </div>
 
             {/* Submit Button */}
-            <button
-              type="submit"
-              className="w-full bg-[#a408c3] text-white py-3 px-6 rounded-lg hover:bg-[#8a06a3] transition-colors disabled:opacity-70"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mr-2"></div>
-                  Submitting Order...
-                </div>
+            <div className="pt-4">
+              {priceEstimate !== null && slicingResult ? (
+                <button
+                  onClick={proceedToCheckout}
+                  className="w-full bg-[#a408c3] text-white py-3 px-6 rounded-lg hover:bg-[#8a06a3] transition-colors"
+                >
+                  Proceed to Checkout
+                </button>
               ) : (
-                "Submit Custom Order"
+                <button
+                  type="submit"
+                  disabled={isSubmitting || !file}
+                  className="w-full bg-[#a408c3] text-white py-3 px-6 rounded-lg hover:bg-[#8a06a3] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? (
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mr-2"></div>
+                      Calculating Quote...
+                    </div>
+                  ) : (
+                    "Get Approximate Quote"
+                  )}
+                </button>
               )}
-            </button>
+            </div>
 
             {/* Help Note */}
             <div className="flex items-start p-4 bg-blue-50 rounded-lg">
@@ -479,4 +563,3 @@ export default function CustomOrder() {
     </div>
   )
 }
-
