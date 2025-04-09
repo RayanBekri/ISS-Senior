@@ -124,9 +124,9 @@ export const itemsApi = {
   },
 }
 
-// Orders API
+// Update the ordersApi object to match the endpoint descriptions
 export const ordersApi = {
-  // Create a new order
+  // Create a new order - POST /api/orders
   createOrder: async (token: string, orderData: Order): Promise<OrderResponse> => {
     const response = await fetch(`${API_BASE_URL}/orders`, {
       method: "POST",
@@ -138,6 +138,7 @@ export const ordersApi = {
     })
     return handleResponse<OrderResponse>(response)
   },
+
   getUserOrders: async (token: string): Promise<Order[]> => {
     const response = await fetch(`${API_BASE_URL}/orders/me`, {
       headers: {
@@ -146,33 +147,36 @@ export const ordersApi = {
     })
     return handleResponse<Order[]>(response)
   },
-  createCustomOrder: async (token: string, orderData: FormData): Promise<OrderResponse> => {
-    const response = await fetch(`${API_BASE_URL}/custom-orders/checkout`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: orderData,
-    })
-    return handleResponse<OrderResponse>(response)
-  },
+
+  // Remove this duplicate method as it's already covered by customOrdersApi.createCustomOrder
+  // createCustomOrder: async (token: string, orderData: FormData): Promise<OrderResponse> => {
+  //   const response = await fetch(`${API_BASE_URL}/custom-orders/checkout`, {
+  //     method: "POST",
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //     body: orderData,
+  //   })
+  //   return handleResponse<OrderResponse>(response)
+  // },
 }
 
-// Custom Orders API
+// Update the customOrdersApi object to match the endpoint descriptions
 export const customOrdersApi = {
-  // Create a custom order
+  // Create a custom order - POST /api/custom-orders
   createCustomOrder: async (token: string, orderData: FormData): Promise<OrderResponse> => {
     const response = await fetch(`${API_BASE_URL}/custom-orders`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
+        // Don't set Content-Type header - browser will set it with boundary for FormData
       },
       body: orderData,
     })
     return handleResponse<OrderResponse>(response)
   },
 
-  // Estimate custom order price
+  // Estimate custom order price - POST /api/custom-orders/estimate
   estimatePrice: async (fileData: FormData): Promise<CustomOrderEstimate> => {
     try {
       console.log("Sending estimate request to:", `${API_BASE_URL}/custom-orders/estimate`)
@@ -273,15 +277,14 @@ export const orderApi = ordersApi
 // Chatbot API
 export const chatbotApi = {
   // Send a message to the chatbot
-  sendMessage: async (chat: string, history?: string[]): Promise<{ text: string }> => {
+  sendMessage: async (chat: string): Promise<{ text: string }> => {
     const response = await fetch(`${API_BASE_URL}/chatbot/query`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        chat,
-        history,
+        chat: chat,
       }),
     })
     return handleResponse<{ text: string }>(response)

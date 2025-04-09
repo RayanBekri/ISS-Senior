@@ -10,6 +10,7 @@ import { CreditCard, Truck, MapPin, AlertCircle, CheckCircle, ChevronLeft, Home 
 import { useAuth } from "../contexts/AuthContext"
 import { useCart } from "../contexts/CartContext"
 import { ordersApi } from "../api/apiService"
+import { customOrdersApi } from "../api/apiService"
 
 export default function CheckoutPage() {
   const { user, token } = useAuth()
@@ -76,7 +77,7 @@ export default function CheckoutPage() {
         // Regular order from shop
         const orderData = {
           client_id: user!.user_id,
-          status: "PENDING" as const, // Add the status property with "PENDING" value
+          status: "PENDING" as const,
           payment_method: formData.payment_method as "CASH" | "CHECK" | "BANK_TRANSFER",
           delivery_address: formData.delivery_address,
           postal_code: formData.postal_code,
@@ -114,7 +115,7 @@ export default function CheckoutPage() {
         }
 
         // Call custom order API
-        await ordersApi.createCustomOrder(token, customOrderFormData)
+        await customOrdersApi.createCustomOrder(token, customOrderFormData)
       }
 
       // Clear cart and custom order data

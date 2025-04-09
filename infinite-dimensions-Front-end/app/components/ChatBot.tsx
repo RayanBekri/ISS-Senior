@@ -194,11 +194,6 @@ export default function ChatBot() {
     setShowSuggestions(false)
     setMessages((prev) => [...prev, userMessage])
 
-    // Get 5 most recent messages for context
-    const recentMessages = [...messages.slice(-5), userMessage]
-      .filter((msg) => msg.type === "user" || msg.type === "bot")
-      .map((msg) => msg.text)
-
     try {
       // Increment usage
       const newCount = usageCount + 1
@@ -209,8 +204,8 @@ export default function ChatBot() {
       const today = now.toISOString().split("T")[0]
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ date: today, count: newCount }))
 
-      // Call the API
-      const response = await chatbotApi.sendMessage(message, recentMessages)
+      // Call the API with the updated format
+      const response = await chatbotApi.sendMessage(message)
 
       // Create bot message
       const botMessage: Message = {
@@ -441,7 +436,7 @@ export default function ChatBot() {
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder="Type your message..."
-                    className="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#a408c3]"
+                    className="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-[#a408c3]"
                     disabled={isTyping}
                   />
                   <button
@@ -461,4 +456,3 @@ export default function ChatBot() {
     </>
   )
 }
-

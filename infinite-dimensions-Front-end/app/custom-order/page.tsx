@@ -76,7 +76,7 @@ export default function CustomOrder() {
     [fileUrl],
   )
 
-  // Update the getEstimate function to better handle file uploads
+  // Update the getEstimate function to use the correct API endpoint
   const getEstimate = async (selectedFile: File) => {
     setEstimateLoading(true)
     setError(null)
