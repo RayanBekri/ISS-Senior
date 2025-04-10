@@ -88,7 +88,7 @@ const estimatePrice = async (req, res, next) => {
     const stlFilePath = path.resolve(req.file.path);
 
     // Generate a temporary text file to capture terminal output
-    const tempOutputFile = path.join('uploads', `slicer_output_${Date.now()}.txt`);
+    const tempOutputFile = path.join('C:\\Users\\bekri\\Downloads\\Infinite Dimensions\\infinite-dimensions-backend\\uploads', `slicer_output_${Date.now()}.txt`);
 
     // Build the curaengine command, using the cwd option to simulate "cd" into curaDir
     const command = `curaengine slice -j "${configPath}" -l "${stlFilePath}" > "${tempOutputFile}"`;
