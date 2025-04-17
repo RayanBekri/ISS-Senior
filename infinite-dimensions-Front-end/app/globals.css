@@ -33,3 +33,29 @@ body {
   }
 }
 
+/* Add these styles to the end of the file to enhance chat message formatting */
+
+.chat-message h3 {
+  margin-top: 0.75rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.chat-message-content p:last-child {
+  margin-bottom: 0;
+}
+
+.chat-message-content strong {
+  font-weight: 600;
+}
+
+.chat-message-content div.flex {
+  margin-bottom: 0.25rem;
+  align-items: baseline;
+}
+
+/* Add a bit more space between sections */
+.chat-message-content h3 + div.flex,
+.chat-message-content h3 + p {
+  margin-top: 0.5rem;
+}

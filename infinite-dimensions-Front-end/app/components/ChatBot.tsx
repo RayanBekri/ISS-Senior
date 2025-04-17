@@ -276,14 +276,82 @@ export default function ChatBot() {
     }
   }
 
-  // Format message text with newlines
+  // Replace the existing formatMessageText function with this more sophisticated version
+  // that handles markdown-style formatting
+
+  // Format message text with markdown-style formatting
   const formatMessageText = (text: string) => {
-    return text.split("\n").map((line, i) => (
-      <span key={i}>
-        {line}
-        {i < text.split("\n").length - 1 && <br />}
-      </span>
-    ))
+    if (!text) return null
+
+    // Process the text in multiple passes to handle different formatting elements
+
+    // Split into lines first to handle line breaks
+    const lines = text.split("\n")
+
+    return (
+      <div className="chat-message-content">
+        {lines.map((line, lineIndex) => {
+          // Check for headers (lines starting with multiple asterisks)
+          if (line.startsWith("**") && line.endsWith("**") && !line.startsWith("***")) {
+            return (
+              <h3 key={lineIndex} className="font-bold text-base my-1">
+                {line.slice(2, -2)}
+              </h3>
+            )
+          }
+
+          // Check for bullet points
+          if (line.trim().startsWith("* ")) {
+            const bulletContent = line.trim().substring(2)
+
+            // Check for nested bullet points (indented with spaces)
+            const indentLevel = line.search(/\S|$/) / 2 // Count leading spaces and divide by 2
+
+            // Process bold text within bullet points
+            const processedContent = processBoldText(bulletContent)
+
+            return (
+              <div key={lineIndex} className="flex" style={{ marginLeft: `${indentLevel * 1.5}rem` }}>
+                <span className="mr-2">•</span>
+                <span>{processedContent}</span>
+              </div>
+            )
+          }
+
+          // Process regular text with bold formatting
+          if (line.includes("**")) {
+            return (
+              <p key={lineIndex} className="mb-1">
+                {processBoldText(line)}
+              </p>
+            )
+          }
+
+          // Regular text
+          return line.trim() ? (
+            <p key={lineIndex} className="mb-1">
+              {line}
+            </p>
+          ) : (
+            <br key={lineIndex} />
+          )
+        })}
+      </div>
+    )
+  }
+
+  // Helper function to process bold text
+  const processBoldText = (text: string) => {
+    // Split by bold markers
+    const parts = text.split(/(\*\*.*?\*\*)/g)
+
+    return parts.map((part, index) => {
+      // Check if this part is bold text
+      if (part.startsWith("**") && part.endsWith("**")) {
+        return <strong key={index}>{part.slice(2, -2)}</strong>
+      }
+      return <span key={index}>{part}</span>
+    })
   }
 
   return (
@@ -353,7 +421,7 @@ export default function ChatBot() {
                             : "bg-gray-100 text-gray-800 rounded-tl-none"
                     }`}
                   >
-                    <p className="text-sm">{formatMessageText(message.text)}</p>
+                    <div className="text-sm chat-message">{formatMessageText(message.text)}</div>
                     <span className="text-xs opacity-70 mt-1 block text-right">
                       {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                     </span>

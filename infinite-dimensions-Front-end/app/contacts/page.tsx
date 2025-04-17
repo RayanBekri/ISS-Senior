@@ -306,31 +306,46 @@ export default function ContactsPage() {
                 </ul>
               </div>
 
-              {/* Departments */}
+              {/* What to Expect */}
               <div className="bg-white rounded-lg shadow-lg p-6">
-                <h3 className="text-lg font-semibold mb-4">Departments</h3>
+                <h3 className="text-lg font-semibold mb-4">What to Expect</h3>
                 <div className="space-y-4">
-                  <div>
-                    <h4 className="font-medium text-[#a408c3]">Sales & Inquiries</h4>
-                    <p className="text-sm text-gray-600">For pricing and product information</p>
-                    <a href="mailto:sales@infinitedimensions.com" className="text-sm hover:underline">
-                      sales@infinitedimensions.com
-                    </a>
+                  <div className="flex items-start">
+                    <div className="w-8 h-8 bg-[#a408c3] rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-white font-medium">1</span>
+                    </div>
+                    <div className="ml-3">
+                      <h4 className="font-medium">Quick Response</h4>
+                      <p className="text-sm text-gray-600">
+                        We'll respond to your inquiry within 24 hours on business days
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-medium text-[#a408c3]">Technical Support</h4>
-                    <p className="text-sm text-gray-600">For help with existing orders</p>
-                    <a href="mailto:support@infinitedimensions.com" className="text-sm hover:underline">
-                      support@infinitedimensions.com
-                    </a>
+                  <div className="flex items-start">
+                    <div className="w-8 h-8 bg-[#a408c3] rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-white font-medium">2</span>
+                    </div>
+                    <div className="ml-3">
+                      <h4 className="font-medium">Personalized Solution</h4>
+                      <p className="text-sm text-gray-600">
+                        Our experts will analyze your needs and provide tailored recommendations
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-medium text-[#a408c3]">Business Development</h4>
-                    <p className="text-sm text-gray-600">For partnerships and collaborations</p>
-                    <a href="mailto:business@infinitedimensions.com" className="text-sm hover:underline">
-                      business@infinitedimensions.com
-                    </a>
+                  <div className="flex items-start">
+                    <div className="w-8 h-8 bg-[#a408c3] rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-white font-medium">3</span>
+                    </div>
+                    <div className="ml-3">
+                      <h4 className="font-medium">Follow-up Support</h4>
+                      <p className="text-sm text-gray-600">
+                        We'll stay in touch throughout your project to ensure satisfaction
+                      </p>
+                    </div>
                   </div>
+                  <Link href="/consultation" className="block mt-2 text-[#a408c3] hover:underline text-sm font-medium">
+                    Book a consultation →
+                  </Link>
                 </div>
               </div>
             </div>
@@ -438,4 +453,3 @@ export default function ContactsPage() {
     </div>
   )
 }
-
