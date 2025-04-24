@@ -251,8 +251,30 @@ CREATE TABLE `password_reset` (
     ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+-- Create the printers table
+CREATE TABLE IF NOT EXISTS printers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    model VARCHAR(255),
+    type VARCHAR(255),
+    power_usage DECIMAL(10, 2),
+    buying_cost DECIMAL(10, 2),
+    lifespan INT,
+    operational_status ENUM('Active', 'Inactive', 'Maintenance', 'Decommissioned') NOT NULL DEFAULT 'Active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 
---
+
+-- Sample data for printers
+INSERT INTO printers (name, model, type, power_usage, buying_cost, lifespan, operational_status)
+VALUES
+('Printer 1', 'Model X1', 'Laser', 500.00, 1200.00, 5, 'Active'),
+('Printer 2', 'Model X2', 'Inkjet', 300.00, 800.00, 3, 'Inactive'),
+('Printer 3', 'Model X3', 'Laser', 550.00, 1500.00, 6, 'Maintenance'),
+('Printer 4', 'Model X4', 'Inkjet', 350.00, 1000.00, 4, 'Decommissioned');
+
+
 -- Re-enable foreign key checks
 --
 SET FOREIGN_KEY_CHECKS = 1;

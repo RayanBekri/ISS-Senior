@@ -10,7 +10,8 @@ const itemRoutes = require('./routes/itemRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const customOrderRoutes = require('./routes/customOrderRoutes');
 const inventoryRoutes = require('./routes/inventoryRoutes');
-const printerRoutes = require('./routes/printerRoutes');
+const printerRoutes = require('./routes/printersRoutes');
+const printingsRoutes = require("./routes/printingsRoutes");
 const financeRoutes = require('./routes/financeRoutes');
 const consultationRoutes = require('./routes/consultationRoutes');
 // const notificationRoutes = require('./routes/notificationRoutes'); // Optional
@@ -32,6 +33,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/custom-orders', customOrderRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/printers', printerRoutes);
+app.use("/api/printings", printingsRoutes);
 app.use('/api/finance', financeRoutes);
 app.use('/api/consultations', consultationRoutes);
 // app.use('/api/notifications', notificationRoutes); // Optional
