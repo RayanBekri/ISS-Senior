@@ -99,9 +99,12 @@ export default function CartPage() {
             </div>
 
             {user ? (
-              <button className="w-full bg-[#a408c3] text-white py-3 px-4 rounded-lg hover:bg-[#8a06a3] transition-colors">
+              <Link
+                href="/checkout"
+                className="w-full bg-[#a408c3] text-white py-3 px-4 rounded-lg hover:bg-[#8a06a3] transition-colors flex items-center justify-center"
+              >
                 Proceed to Checkout
-              </button>
+              </Link>
             ) : (
               <div>
                 <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg flex items-start">
@@ -139,4 +142,3 @@ export default function CartPage() {
     </div>
   )
 }
-

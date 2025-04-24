@@ -22,34 +22,61 @@ export default function SlicerPage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Use useCallback for event handlers to prevent unnecessary re-creation
-  const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setError(null)
-    setPriceEstimate(null)
-    setSlicingResult(null)
+  // Update the handleFileChange function to properly clean up previous file URLs
 
-    if (e.target.files && e.target.files[0]) {
-      const selectedFile = e.target.files[0]
+  // Replace the handleFileChange function with this improved version:
+  const handleFileChange = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      setError(null)
+      setPriceEstimate(null)
+      setSlicingResult(null)
 
-      // Check file type - only allow STL
-      const fileExtension = selectedFile.name.split(".").pop()?.toLowerCase()
-      if (fileExtension !== "stl") {
-        setError("Please upload an STL file only")
-        return
+      // Clean up previous file URL if it exists
+      if (fileUrl) {
+        URL.revokeObjectURL(fileUrl)
+        setFileUrl(null)
       }
 
-      // Check file size (max 50MB)
-      if (selectedFile.size > 50 * 1024 * 1024) {
-        setError("File size exceeds 50MB limit")
-        return
+      if (e.target.files && e.target.files[0]) {
+        const selectedFile = e.target.files[0]
+
+        // Check file type - only allow STL
+        const fileExtension = selectedFile.name.split(".").pop()?.toLowerCase()
+        if (fileExtension !== "stl") {
+          setError("Please upload an STL file only")
+          return
+        }
+
+        // Check file size (max 50MB)
+        if (selectedFile.size > 50 * 1024 * 1024) {
+          setError("File size exceeds 50MB limit")
+          return
+        }
+
+        setFile(selectedFile)
+
+        // Create a blob URL for the file - this helps with CORS issues
+        const url = URL.createObjectURL(selectedFile)
+        setFileUrl(url)
       }
+    },
+    [fileUrl],
+  )
 
-      setFile(selectedFile)
-
-      // Create a blob URL for the file - this helps with CORS issues
-      const url = URL.createObjectURL(selectedFile)
-      setFileUrl(url)
-    }
-  }, [])
+  // Also update the resetFile function to properly clean up
+  const resetFile = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation()
+      if (fileUrl) {
+        URL.revokeObjectURL(fileUrl)
+      }
+      setFile(null)
+      setFileUrl(null)
+      setPriceEstimate(null)
+      setSlicingResult(null)
+    },
+    [fileUrl],
+  )
 
   // Update the getApproximateQuote function to better handle file uploads
   const getApproximateQuote = useCallback(async () => {
@@ -90,20 +117,6 @@ export default function SlicerPage() {
       setIsLoading(false)
     }
   }, [file])
-
-  const resetFile = useCallback(
-    (e: React.MouseEvent) => {
-      e.stopPropagation()
-      if (fileUrl) {
-        URL.revokeObjectURL(fileUrl)
-      }
-      setFile(null)
-      setFileUrl(null)
-      setPriceEstimate(null)
-      setSlicingResult(null)
-    },
-    [fileUrl],
-  )
 
   // Clean up blob URL when component unmounts or fileUrl changes
   React.useEffect(() => {
@@ -216,3 +229,4 @@ export default function SlicerPage() {
     </div>
   )
 }
+

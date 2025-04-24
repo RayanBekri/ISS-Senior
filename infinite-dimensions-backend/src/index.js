@@ -14,6 +14,7 @@ const printerRoutes = require('./routes/printersRoutes');
 const printingsRoutes = require("./routes/printingsRoutes");
 const financeRoutes = require('./routes/financeRoutes');
 const consultationRoutes = require('./routes/consultationRoutes');
+const chatbotRoutes = require('./routes/chatbotRoutes');
 // const notificationRoutes = require('./routes/notificationRoutes'); // Optional
 
 const app = express();
@@ -23,7 +24,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('combined'));
-app.head('/api/health-check', (req, res) => {
+app.get('/api/health-check', (req, res) => {
   res.sendStatus(200);
 });
 
@@ -36,6 +37,7 @@ app.use('/api/printers', printerRoutes);
 app.use("/api/printings", printingsRoutes);
 app.use('/api/finance', financeRoutes);
 app.use('/api/consultations', consultationRoutes);
+app.use('/api/chatbot', chatbotRoutes);
 // app.use('/api/notifications', notificationRoutes); // Optional
 
 app.get('/health', (req, res) => {

@@ -47,7 +47,10 @@ export default function FeaturedProducts() {
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {[...Array(3)].map((_, index) => (
-          <div key={index} className="bg-white rounded-lg overflow-hidden shadow-lg animate-pulse">
+          <div
+            key={`loading-placeholder-${index}`}
+            className="bg-white rounded-lg overflow-hidden shadow-lg animate-pulse"
+          >
             <div className="aspect-square bg-gray-200"></div>
             <div className="p-6">
               <div className="h-4 bg-gray-200 rounded mb-2 w-3/4"></div>
@@ -67,11 +70,11 @@ export default function FeaturedProducts() {
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
       {randomProducts.map((product) => (
         <div
-          key={product.id}
+          key={`product-${product.id || Date.now()}-${Math.random().toString(36).substr(2, 9)}`}
           className="bg-white rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105"
         >
           <div className="aspect-square relative">
-            <Image src="/placeholder.svg" alt={product.name} fill className="object-cover" />
+            <Image src={product.image || "/placeholder.svg"} alt={product.name} fill className="object-cover" />
           </div>
           <div className="p-6">
             <h3 className="font-semibold mb-2 text-gray-900">{product.name}</h3>
@@ -124,7 +127,10 @@ function FallbackProducts() {
           description: "Modular desk organization system tailored to your workspace",
         },
       ].map((product, index) => (
-        <div key={index} className="bg-white rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105">
+        <div
+          key={`fallback-product-${index}`}
+          className="bg-white rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105"
+        >
           <div className="aspect-square relative">
             <Image src={product.image || "/placeholder.svg"} alt={product.name} fill className="object-cover" />
           </div>

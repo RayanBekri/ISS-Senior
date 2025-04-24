@@ -1,3 +1,5 @@
+// src/controllers/customOrderController.js
+
 const pool = require('../config/db');
 const { validationResult } = require('express-validator');
 const multer = require('multer');
@@ -7,23 +9,23 @@ const { exec } = require('child_process');
 const util = require('util');
 const execPromise = util.promisify(exec);
 
-// 1) Multer storage for final custom order creation using original filename
+// Multer storage for creation (saving the file with its original filename)
 const storageCreate = multer.diskStorage({
-  destination: function (req, file, cb) {
+  destination: (req, file, cb) => {
     cb(null, 'uploads/');
   },
-  filename: function (req, file, cb) {
+  filename: (req, file, cb) => {
     cb(null, file.originalname);
   }
 });
 const uploadForCreate = multer({ storage: storageCreate }).single('model');
 
-// 2) Multer storage for estimate route using original filename
+// Multer storage for the estimate route (saving the file with its original filename)
 const storageEstimate = multer.diskStorage({
-  destination: function (req, file, cb) {
+  destination: (req, file, cb) => {
     cb(null, 'uploads/');
   },
-  filename: function (req, file, cb) {
+  filename: (req, file, cb) => {
     cb(null, file.originalname);
   }
 });
@@ -31,9 +33,8 @@ const uploadForEstimate = multer({ storage: storageEstimate }).single('model');
 
 /**
  * createCustomOrder
- * - Inserts a new custom order into the DB.
- * - Expects userId, material, color, strength, additionalInfo in req.body.
- * - Expects the uploaded STL file in req.file (named "model").
+ *
+ * Inserts a new custom order record into the custom_orders table.
  */
 const createCustomOrder = async (req, res, next) => {
   try {
@@ -59,17 +60,48 @@ const createCustomOrder = async (req, res, next) => {
 };
 
 /**
+ * advancedParseHeader
+ *
+ * Parses the G-code header text and searches for a line starting with ";TIME:".
+ * Returns the extracted print time (in seconds) as a number.
+ */
+const advancedParseHeader = (headerText) => {
+  let printTimeS = null;
+  const lines = headerText.split('\n');
+  for (let line of lines) {
+    line = line.trim();
+    // Try to match a line like ";TIME: 9027"
+    const match = line.match(/^;TIME:\s*(\d+(\.\d+)?)/);
+    if (match) {
+      printTimeS = parseFloat(match[1]);
+      break;
+    }
+    // If you need to support an alternate format (e.g., "Print time (s): 9027"),
+    // uncomment the following:
+    // const altMatch = line.match(/^Print time \(s\):\s*(\d+(\.\d+)?)/);
+    // if (altMatch) {
+    //   printTimeS = parseFloat(altMatch[1]);
+    //   break;
+    // }
+  }
+  return { printTimeS };
+};
+
+/**
  * estimatePrice
- * - Accepts an STL file named "model" in req.file.
- * - Checks that the file has a .stl extension.
- * - Runs CuraEngine to slice the STL file, directing its terminal output to a text file.
- * - Reads that text file and parses for a line starting with ";TIME:".
- * - Converts the extracted time (in seconds) to hours.
- * - Calculates a placeholder price and returns { time, price }.
- * - Deletes the temporary text file and output file after processing.
+ *
+ * Processes an uploaded STL file to generate an estimated print time and price.
+ * This function:
+ *   - Verifies that the uploaded file is an STL.
+ *   - Executes the CuraEngine command with the verbose flag so that the resulting G-code file
+ *     contains the header information.
+ *   - Reads the output G-code file and parses it to extract the print time.
+ *   - Converts the print time (in seconds) into hours and calculates a price using a fixed rate.
+ *   - Deletes the output G-code file and the uploaded STL file.
  */
 const estimatePrice = async (req, res, next) => {
   try {
+    // Validate request
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -77,51 +109,66 @@ const estimatePrice = async (req, res, next) => {
     if (!req.file) {
       return res.status(400).json({ message: 'No STL file uploaded.' });
     }
+
+    // Check file extension
     const fileExtension = path.extname(req.file.originalname).toLowerCase();
     if (fileExtension !== '.stl') {
       await fs.unlink(req.file.path).catch(err => console.error('Error removing non-STL file:', err));
       return res.status(400).json({ message: 'Only STL files are allowed.' });
     }
-    const curaDir = process.env.CURA_DIR || 'C:\\Program Files\\UltiMaker Cura 5.7.2';
-    const configPath = process.env.CURA_CONFIG_PATH || 'C:\\Users\\bekri\\Downloads\\ender6_config.json';
-    const outputGcodePath = process.env.CURA_OUTPUT_PATH || 'C:\\Users\\bekri\\Downloads\\output.gcode';
+
+    // Define file paths.
+    // You may override these by setting the corresponding environment variables.
+    const configPath = process.env.CURA_CONFIG_PATH ||
+      path.join('/workspaces/ISS-Senior/infinite-dimensions-backend/Printer_Config', 'ender6_config.json');
+    const outputGcodePath = process.env.CURA_OUTPUT_PATH ||
+      path.join('/workspaces/ISS-Senior/infinite-dimensions-backend/uploads', 'output.gcode');
     const stlFilePath = path.resolve(req.file.path);
 
-    const tempOutputFile = path.join('C:\\Users\\bekri\\Downloads\\Infinite Dimensions\\infinite-dimensions-backend\\uploads', `slicer_output_${Date.now()}.txt`);
-
-    const command = `curaengine slice -j "${configPath}" -l "${stlFilePath}" > "${tempOutputFile}"`;
-    console.log('CuraEngine command:', command);
-    const { stdout, stderr } = await execPromise(command, { cwd: curaDir });
+    // Build and execute the CuraEngine command.
+    // We do not use any output redirection here because CuraEngine writes the header into the G-code file.
+    const command = `CuraEngine slice -v -j "${configPath}" -l "${stlFilePath}" -o "${outputGcodePath}"`;
+    console.log('Executing CuraEngine command:', command);
+    const { stdout, stderr } = await execPromise(command);
     console.log('CuraEngine stdout:', stdout);
     if (stderr) console.error('CuraEngine stderr:', stderr);
-    const outputText = await fs.readFile(tempOutputFile, 'utf8');
-    let timeInSeconds = 0;
-    const lines = outputText.split('\n');
-    console.log('Output text lines:', lines);
-    for (const line of lines) {
-      if (line.startsWith(';TIME:')) {
-        const numericPart = line.replace(';TIME:', '').trim();
-        console.log('Extracted time (seconds)', numericPart);
-        timeInSeconds = parseFloat(numericPart) || 0;
-        break;
-      }
+
+    // Read the generated G-code file (which contains the header).
+    const gcodeContent = await fs.readFile(outputGcodePath, 'utf8');
+    // Log the first 20 lines for debugging.
+    console.log('G-code header preview:\n', gcodeContent.split('\n').slice(0, 20).join('\n'));
+
+    // Parse the header to extract print time (in seconds)
+    const { printTimeS } = advancedParseHeader(gcodeContent);
+    if (printTimeS === null) {
+      console.warn('No print time found in the G-code header.');
+      return res.status(500).json({ message: 'Could not determine print time from slicing output.' });
     }
-    const timeInHours = parseFloat((timeInSeconds / 3600).toFixed(2));
-    const price = timeInHours * 5;
-    console.log('Extracted time (seconds):', timeInSeconds);
-    console.log('Time in hours:', timeInHours);
-    console.log('Calculated price:', price);
-    await fs.unlink(tempOutputFile).catch(err => console.error('Cleanup error (temp file):', err));
-    return res.status(200).json({ time: timeInHours, price });
+
+    // Convert print time (s) to hours and calculate price.
+    const timeInHours = parseFloat((printTimeS / 3600).toFixed(2));
+    const machineRate = 5; // Dollars per hour (adjust as needed)
+    const price = parseFloat((timeInHours * machineRate).toFixed(2));
+
+    console.log('Extracted print time (s):', printTimeS);
+    console.log('Print time (hr):', timeInHours);
+    console.log('Total estimated price: $', price);
+
+    // Cleanup: delete the output G-code file and the uploaded STL file.
+    await fs.unlink(outputGcodePath).catch(err => console.error('Cleanup error (G-code file):', err));
+    await fs.unlink(stlFilePath).catch(err => console.error('Cleanup error (uploaded STL):', err));
+
+    return res.status(200).json({
+      time: timeInHours,
+      price
+    });
   } catch (error) {
     console.error('Error in estimatePrice:', error);
     return res.status(500).json({ message: 'Internal server error during price estimation.' });
   }
 };
 
-module.exports = {
-  uploadForCreate,
-  uploadForEstimate,
-  createCustomOrder,
-  estimatePrice
-};
+exports.uploadForCreate = uploadForCreate;
+exports.uploadForEstimate = uploadForEstimate;
+exports.createCustomOrder = createCustomOrder;
+exports.estimatePrice = estimatePrice;
