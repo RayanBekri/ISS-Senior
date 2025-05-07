@@ -16,6 +16,7 @@ const financeRoutes = require('./routes/financeRoutes');
 const consultationRoutes = require('./routes/consultationRoutes');
 const chatbotRoutes = require('./routes/chatbotRoutes');
 // const notificationRoutes = require('./routes/notificationRoutes'); // Optional
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/custom-orders', customOrderRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/printers', printerRoutes);
+app.use('/api/user', userRoutes);
 app.use("/api/printings", printingsRoutes);
 app.use('/api/finance', financeRoutes);
 app.use('/api/consultations', consultationRoutes);

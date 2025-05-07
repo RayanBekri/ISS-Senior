@@ -14,7 +14,7 @@ CREATE TABLE `user` (
   `password` VARCHAR(255) NOT NULL,
   `role` ENUM('ADMIN','EMPLOYEE','CLIENT') NOT NULL DEFAULT 'CLIENT',
   `is_company` BOOLEAN NOT NULL DEFAULT FALSE,
-  `is_approved` BOOLEAN NOT NULL DEFAULT FALSE,
+  `approval_status` ENUM('pending', 'accepted', 'denied') NOT NULL DEFAULT 'pending',
   `first_name` VARCHAR(100) NULL,
   `last_name` VARCHAR(100) NULL,
   `company_name` VARCHAR(255) NULL,        -- New field for company name
@@ -278,3 +278,17 @@ VALUES
 -- Re-enable foreign key checks
 --
 SET FOREIGN_KEY_CHECKS = 1;
+
+--INSERT USERS TO TEST COMPANY VERIFICATION
+INSERT INTO `user` (
+  email, password, role, is_company, is_approved,
+  first_name, last_name, company_name, company_tax_number, created_at
+) VALUES
+('techsolutions@example.com', 'password123', 'CLIENT', TRUE, TRUE, NULL, NULL, 'Tech Solutions Inc.', '123456789', '2023-02-15'),
+('globalinnovations@example.com', 'password123', 'CLIENT', TRUE, FALSE, NULL, NULL, 'Global Innovations Ltd.', '987654321', '2023-02-14'),
+('digitalservices@example.com', 'password123', 'CLIENT', TRUE, FALSE, NULL, NULL, 'Digital Services Co.', '456789123', '2023-02-13'),
+('deloitte@example.com', 'password123', 'CLIENT', TRUE, TRUE, NULL, NULL, 'Deloitte', '111222', '2023-02-12'),
+('kpmg@example.com', 'password123', 'CLIENT', TRUE, FALSE, NULL, NULL, 'KPMG', '333444', '2023-02-11'),
+('pwc@example.com', 'password123', 'CLIENT', TRUE, FALSE, NULL, NULL, 'PWC', '222555', '2023-02-10'),
+('ey@example.com', 'password123', 'CLIENT', TRUE, FALSE, NULL, NULL, 'Ernst & Young', '666777', '2023-02-09'),
+('mckinsey@example.com', 'password123', 'CLIENT', TRUE, FALSE, NULL, NULL, 'McKinsey & Co', '888999', '2023-02-08');
