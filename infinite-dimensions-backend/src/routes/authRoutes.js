@@ -1,56 +1,62 @@
 const express = require('express');
-const router = express.Router();
 const { body } = require('express-validator');
-const { 
-  registerClient, 
-  registerPrivileged, 
-  login, 
-  requestPasswordReset, 
+const {
+  registerClient,
+  login,
+  loginStaff,
+  requestPasswordReset,
   resetPassword,
   updatePassword,
   me
 } = require('../controllers/authController');
-const { authenticateToken, authorizeRoles  } = require('../middleware/auth');
+const { authenticateToken } = require('../middleware/auth');
 
-router.post('/register',
+const router = express.Router();
+
+router.post(
+  '/register',
   [
-    body('email').isEmail().withMessage('A valid email is required'),
-    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
-    body('first_name').notEmpty().withMessage('First name is required'),
-    body('last_name').notEmpty().withMessage('Last name is required'),
-    body('is_company').optional().isBoolean().withMessage('is_company must be a boolean'),
+    body('email')
+      .isEmail().withMessage('A valid email is required'),
+    body('password')
+      .isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+    body('first_name')
+      .notEmpty().withMessage('First name is required'),
+    body('last_name')
+      .notEmpty().withMessage('Last name is required'),
+
+    body('is_company')
+      .optional()
+      .isBoolean().withMessage('is_company must be a boolean')
+      .toBoolean(),
+
     body('company_name')
-      .if((value, { req }) => req.body.is_company === true || req.body.is_company === 'true')
-      .notEmpty()
-      .withMessage('Company name is required when registering as a company'),
+      .optional()
+      .isString().withMessage('Company name must be text'),
+
     body('company_tax_number')
-      .if((value, { req }) => req.body.is_company === true || req.body.is_company === 'true')
-      .notEmpty()
-      .withMessage('Company tax number is required when registering as a company')
+      .optional()
+      .isString().withMessage('Company tax number must be text'),
   ],
   registerClient
 );
 
-router.post('/6f4a1d3b8c',
-  authenticateToken,
-  authorizeRoles('ADMIN'),
+router.post(
+  '/login/staff',
   [
-    body('email').isEmail().withMessage('A valid email is required'),
-    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
-    body('role').notEmpty().withMessage('Role is required').isIn(['ADMIN','EMPLOYEE']).withMessage('Invalid role'),
-    body('first_name').notEmpty().withMessage('First name is required'),
-    body('last_name').notEmpty().withMessage('Last name is required')
+    body('email').isEmail(),
+    body('password').isLength({ min: 6 })
   ],
-  registerPrivileged
+  loginStaff
 );
 
-router.post('/login',
-  [
-    body('email').isEmail().withMessage('A valid email is required'),
-    body('password').notEmpty().withMessage('Password is required')
-  ],
+
+router.post(
+  '/login',
+  [ body('email').isEmail(), body('password').notEmpty() ],
   login
 );
+
 
 router.post('/request-password-reset',
   [

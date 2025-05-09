@@ -1,0 +1,138 @@
+{
+  "salesAndProfit": {
+    "weekly": [
+      { "period": "Week 1", "sales": 12500, "profit": 3750 },
+      { "period": "Week 2", "sales": 15000, "profit": 4500 },
+      { "period": "Week 3", "sales": 18000, "profit": 5400 },
+      { "period": "Week 4", "sales": 16500, "profit": 4950 },
+      { "period": "Week 5", "sales": 19000, "profit": 5700 },
+      { "period": "Week 6", "sales": 22000, "profit": 6600 },
+      { "period": "Week 7", "sales": 20500, "profit": 6150 },
+      { "period": "Week 8", "sales": 23000, "profit": 6900 }
+    ],
+    "monthly": [
+      { "period": "Jan", "sales": 45000, "profit": 13500 },
+      { "period": "Feb", "sales": 52000, "profit": 15600 },
+      { "period": "Mar", "sales": 58000, "profit": 17400 },
+      { "period": "Apr", "sales": 63000, "profit": 18900 },
+      { "period": "May", "sales": 70000, "profit": 21000 },
+      { "period": "Jun", "sales": 75000, "profit": 22500 },
+      { "period": "Jul", "sales": 82000, "profit": 24600 },
+      { "period": "Aug", "sales": 88000, "profit": 26400 },
+      { "period": "Sep", "sales": 93000, "profit": 27900 },
+      { "period": "Oct", "sales": 98000, "profit": 29400 },
+      { "period": "Nov", "sales": 105000, "profit": 31500 },
+      { "period": "Dec", "sales": 115000, "profit": 34500 }
+    ],
+    "quarterly": [
+      { "period": "Q1", "sales": 155000, "profit": 46500 },
+      { "period": "Q2", "sales": 208000, "profit": 62400 },
+      { "period": "Q3", "sales": 263000, "profit": 78900 },
+      { "period": "Q4", "sales": 318000, "profit": 95400 }
+    ],
+    "yearly": [
+      { "period": "2020", "sales": 750000, "profit": 225000 },
+      { "period": "2021", "sales": 850000, "profit": 255000 },
+      { "period": "2022", "sales": 944000, "profit": 283200 },
+      { "period": "2023", "sales": 1050000, "profit": 315000 },
+      { "period": "2024", "sales": 1150000, "profit": 345000 }
+    ]
+  },
+  "revenueFrequency": {
+    "weekly": [
+      { "range": "0-1K", "2023": 10, "2024": 8 },
+      { "range": "1K-5K", "2023": 15, "2024": 18 },
+      { "range": "5K-10K", "2023": 25, "2024": 30 },
+      { "range": "10K-20K", "2023": 20, "2024": 25 },
+      { "range": "20K-50K", "2023": 15, "2024": 12 },
+      { "range": "50K+", "2023": 5, "2024": 7 }
+    ],
+    "monthly": [
+      { "range": "0-5K", "2023": 8, "2024": 6 },
+      { "range": "5K-10K", "2023": 12, "2024": 10 },
+      { "range": "10K-20K", "2023": 20, "2024": 18 },
+      { "range": "20K-50K", "2023": 25, "2024": 30 },
+      { "range": "50K-100K", "2023": 18, "2024": 22 },
+      { "range": "100K-200K", "2023": 10, "2024": 12 },
+      { "range": "200K+", "2023": 7, "2024": 8 }
+    ],
+    "quarterly": [
+      { "range": "0-20K", "2023": 5, "2024": 4 },
+      { "range": "20K-50K", "2023": 10, "2024": 8 },
+      { "range": "50K-100K", "2023": 15, "2024": 12 },
+      { "range": "100K-200K", "2023": 25, "2024": 28 },
+      { "range": "200K-500K", "2023": 30, "2024": 35 },
+      { "range": "500K+", "2023": 15, "2024": 18 }
+    ],
+    "yearly": [
+      { "range": "0-100K", "2023": 5, "2024": 3 },
+      { "range": "100K-500K", "2023": 15, "2024": 12 },
+      { "range": "500K-1M", "2023": 25, "2024": 22 },
+      { "range": "1M-5M", "2023": 35, "2024": 40 },
+      { "range": "5M-10M", "2023": 15, "2024": 18 },
+      { "range": "10M+", "2023": 5, "2024": 8 }
+    ]
+  },
+  "profitLoss": {
+    "weekly": {
+      "expenses": [
+        { "name": "Sales & Distribution", "value": 2500, "color": "#A200C1" },
+        { "name": "Marketing", "value": 1800, "color": "#C080D3" },
+        { "name": "Administration", "value": 3200, "color": "#FFB100" },
+        { "name": "Depreciation", "value": 1000, "color": "#4CAF50" },
+        { "name": "Other", "value": 800, "color": "#2196F3" }
+      ],
+      "revenue": [
+        { "name": "Online Sales", "value": 45, "color": "#A200C1" },
+        { "name": "In-Store Sales", "value": 30, "color": "#C080D3" },
+        { "name": "Wholesale", "value": 15, "color": "#FFB100" },
+        { "name": "Other", "value": 10, "color": "#4CAF50" }
+      ]
+    },
+    "monthly": {
+      "expenses": [
+        { "name": "Sales & Distribution", "value": 12500, "color": "#A200C1" },
+        { "name": "Marketing", "value": 8500, "color": "#C080D3" },
+        { "name": "Administration", "value": 15000, "color": "#FFB100" },
+        { "name": "Depreciation", "value": 5000, "color": "#4CAF50" },
+        { "name": "Other", "value": 3500, "color": "#2196F3" }
+      ],
+      "revenue": [
+        { "name": "Online Sales", "value": 45, "color": "#A200C1" },
+        { "name": "In-Store Sales", "value": 30, "color": "#C080D3" },
+        { "name": "Wholesale", "value": 15, "color": "#FFB100" },
+        { "name": "Other", "value": 10, "color": "#4CAF50" }
+      ]
+    },
+    "quarterly": {
+      "expenses": [
+        { "name": "Sales & Distribution", "value": 37500, "color": "#A200C1" },
+        { "name": "Marketing", "value": 25500, "color": "#C080D3" },
+        { "name": "Administration", "value": 45000, "color": "#FFB100" },
+        { "name": "Depreciation", "value": 15000, "color": "#4CAF50" },
+        { "name": "Other", "value": 10500, "color": "#2196F3" }
+      ],
+      "revenue": [
+        { "name": "Online Sales", "value": 45, "color": "#A200C1" },
+        { "name": "In-Store Sales", "value": 30, "color": "#C080D3" },
+        { "name": "Wholesale", "value": 15, "color": "#FFB100" },
+        { "name": "Other", "value": 10, "color": "#4CAF50" }
+      ]
+    },
+    "yearly": {
+      "expenses": [
+        { "name": "Sales & Distribution", "value": 150000, "color": "#A200C1" },
+        { "name": "Marketing", "value": 102000, "color": "#C080D3" },
+        { "name": "Administration", "value": 180000, "color": "#FFB100" },
+        { "name": "Depreciation", "value": 60000, "color": "#4CAF50" },
+        { "name": "Other", "value": 42000, "color": "#2196F3" }
+      ],
+      "revenue": [
+        { "name": "Online Sales", "value": 45, "color": "#A200C1" },
+        { "name": "In-Store Sales", "value": 30, "color": "#C080D3" },
+        { "name": "Wholesale", "value": 15, "color": "#FFB100" },
+        { "name": "Other", "value": 10, "color": "#4CAF50" }
+      ]
+    }
+  }
+}

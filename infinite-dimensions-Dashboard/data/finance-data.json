@@ -1,0 +1,977 @@
+{
+  "profitLoss": {
+    "monthlyExpenses": [
+      { "name": "Sales & Distribution", "value": 12500, "color": "#A200C1" },
+      { "name": "Marketing", "value": 8500, "color": "#C080D3" },
+      { "name": "Administration", "value": 15000, "color": "#FFB100" },
+      { "name": "Depreciation", "value": 5000, "color": "#4CAF50" },
+      { "name": "Other", "value": 3500, "color": "#2196F3" }
+    ],
+    "revenueDistribution": [
+      { "name": "Online Sales", "value": 45, "color": "#A200C1" },
+      { "name": "In-Store Sales", "value": 30, "color": "#C080D3" },
+      { "name": "Wholesale", "value": 15, "color": "#FFB100" },
+      { "name": "Other", "value": 10, "color": "#4CAF50" }
+    ],
+    "profitLossReports": [
+      { "category": "Revenue", "value": 120000, "previousYear": 105000 },
+      { "category": "Cost of Sales", "value": -65000, "previousYear": -58000 },
+      { "category": "Gross Profit", "value": 55000, "previousYear": 47000 },
+      { "category": "Operating Expenses", "value": -32000, "previousYear": -28000 },
+      { "category": "Net Profit", "value": 23000, "previousYear": 19000 }
+    ],
+    "nonOperatingIncome": [
+      { "name": "Interest Income", "value": 12495, "color": "#A200C1" },
+      { "name": "Gain on Sales", "value": 4650, "color": "#C080D3" },
+      { "name": "Exchange Gain", "value": 2254, "color": "#FFB100" },
+      { "name": "Dividend Income", "value": 15917, "color": "#4CAF50" }
+    ],
+    "yearlyOperatingExpenses": [
+      {
+        "quarter": "Q1",
+        "Sales & Distribution": 65000,
+        "Marketing": 35000,
+        "Administration": 70000,
+        "Interest & Tax": 28000
+      },
+      {
+        "quarter": "Q2",
+        "Sales & Distribution": 72000,
+        "Marketing": 42000,
+        "Administration": 65000,
+        "Interest & Tax": 30000
+      },
+      {
+        "quarter": "Q3",
+        "Sales & Distribution": 58000,
+        "Marketing": 38000,
+        "Administration": 75000,
+        "Interest & Tax": 25000
+      },
+      {
+        "quarter": "Q4",
+        "Sales & Distribution": 80000,
+        "Marketing": 45000,
+        "Administration": 85000,
+        "Interest & Tax": 32000
+      }
+    ],
+    "yearlyRevenue": [
+      { "month": "Jan", "revenue": 85000 },
+      { "month": "Feb", "revenue": 92000 },
+      { "month": "Mar", "revenue": 105000 },
+      { "month": "Apr", "revenue": 110000 },
+      { "month": "May", "revenue": 115000 },
+      { "month": "Jun", "revenue": 125000 },
+      { "month": "Jul", "revenue": 130000 },
+      { "month": "Aug", "revenue": 135000 },
+      { "month": "Sep", "revenue": 140000 },
+      { "month": "Oct", "revenue": 145000 },
+      { "month": "Nov", "revenue": 150000 },
+      { "month": "Dec", "revenue": 160000 }
+    ],
+    "salesAndProfit": [
+      { "month": "Jan", "sales": 85000, "profit": 17000 },
+      { "month": "Feb", "sales": 92000, "profit": 18400 },
+      { "month": "Mar", "sales": 105000, "profit": 21000 },
+      { "month": "Apr", "sales": 110000, "profit": 22000 },
+      { "month": "May", "sales": 115000, "profit": 23000 },
+      { "month": "Jun", "sales": 125000, "profit": 25000 },
+      { "month": "Jul", "sales": 130000, "profit": 26000 },
+      { "month": "Aug", "sales": 135000, "profit": 27000 },
+      { "month": "Sep", "sales": 140000, "profit": 28000 },
+      { "month": "Oct", "sales": 145000, "profit": 29000 },
+      { "month": "Nov", "sales": 150000, "profit": 30000 },
+      { "month": "Dec", "sales": 160000, "profit": 32000 }
+    ],
+    "revenueFrequency": [
+      { "range": "0-1K", "frequency": 15 },
+      { "range": "1K-5K", "frequency": 25 },
+      { "range": "5K-10K", "frequency": 40 },
+      { "range": "10K-20K", "frequency": 35 },
+      { "range": "20K-50K", "frequency": 20 },
+      { "range": "50K-100K", "frequency": 10 },
+      { "range": "100K+", "frequency": 5 }
+    ],
+    "tableData": {
+      "summary": [
+        {
+          "account": "Revenue",
+          "2022": 3245780,
+          "2023": 3574625,
+          "2024": 5801845
+        },
+        {
+          "account": "Cost of Goods Sold",
+          "2022": -1789520,
+          "2023": -1956756,
+          "2024": -1729239
+        },
+        {
+          "account": "Gross Profit",
+          "2022": 1456260,
+          "2023": 1617869,
+          "2024": 4072606
+        },
+        {
+          "account": "Operating Expenses",
+          "2022": -876540,
+          "2023": -984013,
+          "2024": -3039459
+        },
+        {
+          "account": "Operating Income",
+          "2022": 579720,
+          "2023": 633856,
+          "2024": 1033147
+        },
+        {
+          "account": "Other Income",
+          "2022": 32450,
+          "2023": 35316,
+          "2024": 42798
+        },
+        {
+          "account": "Other Expenses",
+          "2022": -18760,
+          "2023": -20316,
+          "2024": -36000
+        },
+        {
+          "account": "Net Income Before Taxes",
+          "2022": 593410,
+          "2023": 648856,
+          "2024": 1039945
+        },
+        {
+          "account": "Income Tax Expense",
+          "2022": -148352,
+          "2023": -162214,
+          "2024": -259986
+        },
+        {
+          "account": "Net Income",
+          "2022": 445058,
+          "2023": 486642,
+          "2024": 779959
+        }
+      ],
+      "detailed": [
+        {
+          "account": "Revenue",
+          "subaccount": "Product Sales",
+          "2022": 2845780,
+          "2023": 3124625,
+          "2024": 5101845
+        },
+        {
+          "account": "Revenue",
+          "subaccount": "Service Revenue",
+          "2022": 400000,
+          "2023": 450000,
+          "2024": 700000
+        },
+        {
+          "account": "Cost of Goods Sold",
+          "subaccount": "Direct Materials",
+          "2022": -1089520,
+          "2023": -1156756,
+          "2024": -929239
+        },
+        {
+          "account": "Cost of Goods Sold",
+          "subaccount": "Direct Labor",
+          "2022": -700000,
+          "2023": -800000,
+          "2024": -800000
+        },
+        {
+          "account": "Operating Expenses",
+          "subaccount": "Sales & Marketing",
+          "2022": -376540,
+          "2023": -414013,
+          "2024": -1539459
+        },
+        {
+          "account": "Operating Expenses",
+          "subaccount": "Research & Development",
+          "2022": -200000,
+          "2023": -220000,
+          "2024": -700000
+        },
+        {
+          "account": "Operating Expenses",
+          "subaccount": "General & Administrative",
+          "2022": -300000,
+          "2023": -350000,
+          "2024": -800000
+        },
+        {
+          "account": "Other Income",
+          "subaccount": "Interest Income",
+          "2022": 12450,
+          "2023": 15316,
+          "2024": 22798
+        },
+        {
+          "account": "Other Income",
+          "subaccount": "Investment Income",
+          "2022": 20000,
+          "2023": 20000,
+          "2024": 20000
+        },
+        {
+          "account": "Other Expenses",
+          "subaccount": "Interest Expense",
+          "2022": -18760,
+          "2023": -20316,
+          "2024": -36000
+        }
+      ],
+      "quarterly": [
+        {
+          "quarter": "Q1 2023",
+          "revenue": 843656,
+          "cogs": -462594,
+          "grossProfit": 381062,
+          "operatingExpenses": -232548,
+          "operatingIncome": 148514,
+          "netIncome": 114756
+        },
+        {
+          "quarter": "Q2 2023",
+          "revenue": 893656,
+          "cogs": -489188,
+          "grossProfit": 404468,
+          "operatingExpenses": -246003,
+          "operatingIncome": 158465,
+          "netIncome": 122661
+        },
+        {
+          "quarter": "Q3 2023",
+          "revenue": 918656,
+          "cogs": -502689,
+          "grossProfit": 415967,
+          "operatingExpenses": -252963,
+          "operatingIncome": 163004,
+          "netIncome": 126161
+        },
+        {
+          "quarter": "Q4 2023",
+          "revenue": 918657,
+          "cogs": -502285,
+          "grossProfit": 416372,
+          "operatingExpenses": -252499,
+          "operatingIncome": 163873,
+          "netIncome": 123064
+        },
+        {
+          "quarter": "Q1 2024",
+          "revenue": 1450461,
+          "cogs": -432310,
+          "grossProfit": 1018151,
+          "operatingExpenses": -759865,
+          "operatingIncome": 258286,
+          "netIncome": 194990
+        },
+        {
+          "quarter": "Q2 2024",
+          "revenue": 1450461,
+          "cogs": -432310,
+          "grossProfit": 1018151,
+          "operatingExpenses": -759865,
+          "operatingIncome": 258287,
+          "netIncome": 194990
+        },
+        {
+          "quarter": "Q3 2024",
+          "revenue": 1450461,
+          "cogs": -432310,
+          "grossProfit": 1018151,
+          "operatingExpenses": -759865,
+          "operatingIncome": 258287,
+          "netIncome": 194990
+        },
+        {
+          "quarter": "Q4 2024",
+          "revenue": 1450462,
+          "cogs": -432309,
+          "grossProfit": 1018153,
+          "operatingExpenses": -759864,
+          "operatingIncome": 258287,
+          "netIncome": 194989
+        }
+      ]
+    }
+  },
+  "balanceSheet": {
+    "monthlyEquity": [
+      { "month": "Jan", "equity": 1000000 },
+      { "month": "Feb", "equity": 1020000 },
+      { "month": "Mar", "equity": 1050000 },
+      { "month": "Apr", "equity": 1080000 },
+      { "month": "May", "equity": 1100000 },
+      { "month": "Jun", "equity": 1130000 },
+      { "month": "Jul", "equity": 1150000 },
+      { "month": "Aug", "equity": 1180000 },
+      { "month": "Sep", "equity": 1200000 },
+      { "month": "Oct", "equity": 1230000 },
+      { "month": "Nov", "equity": 1250000 },
+      { "month": "Dec", "equity": 1280000 }
+    ],
+    "liquidityRatio": [
+      { "quarter": "Q1 2023", "currentRatio": 1.8, "quickRatio": 1.2 },
+      { "quarter": "Q2 2023", "currentRatio": 1.9, "quickRatio": 1.3 },
+      { "quarter": "Q3 2023", "currentRatio": 2.0, "quickRatio": 1.4 },
+      { "quarter": "Q4 2023", "currentRatio": 2.1, "quickRatio": 1.5 },
+      { "quarter": "Q1 2024", "currentRatio": 2.2, "quickRatio": 1.6 },
+      { "quarter": "Q2 2024", "currentRatio": 2.3, "quickRatio": 1.7 }
+    ],
+    "assetsLiabilitiesEquity": [
+      { "month": "Jan", "assets": 2500000, "liabilities": 1500000, "equity": 1000000 },
+      { "month": "Feb", "assets": 2550000, "liabilities": 1530000, "equity": 1020000 },
+      { "month": "Mar", "assets": 2600000, "liabilities": 1550000, "equity": 1050000 },
+      { "month": "Apr", "assets": 2650000, "liabilities": 1570000, "equity": 1080000 },
+      { "month": "May", "assets": 2700000, "liabilities": 1600000, "equity": 1100000 },
+      { "month": "Jun", "assets": 2750000, "liabilities": 1620000, "equity": 1130000 }
+    ],
+    "currentAssetsDistribution": [
+      { "name": "Cash & Bank", "value": 2450000, "color": "#A200C1" },
+      { "name": "Accounts Receivable", "value": 540000, "color": "#C080D3" },
+      { "name": "Inventory", "value": 3500000, "color": "#FFB100" },
+      { "name": "Prepaid Expenses", "value": 125000, "color": "#4CAF50" }
+    ],
+    "currentLiabilitiesDistribution": [
+      { "name": "Accounts Payable", "value": 1250000, "color": "#A200C1" },
+      { "name": "Short-term Loans", "value": 750000, "color": "#C080D3" },
+      { "name": "Accrued Expenses", "value": 350000, "color": "#FFB100" }
+    ],
+    "debtToEquityRatio": [
+      { "year": "2020", "ratio": 1.5 },
+      { "year": "2021", "ratio": 1.4 },
+      { "year": "2022", "ratio": 1.3 },
+      { "year": "2023", "ratio": 1.2 },
+      { "year": "2024", "ratio": 1.1 }
+    ],
+    "tableData": {
+      "summary": [
+        {
+          "account": "Assets",
+          "2022": 5045678,
+          "2023": 5531381,
+          "2024": 7531084
+        },
+        {
+          "account": "Liabilities",
+          "2022": 2623456,
+          "2023": 2872972,
+          "2024": 4280299
+        },
+        {
+          "account": "Equity",
+          "2022": 2422222,
+          "2023": 2658409,
+          "2024": 3250785
+        }
+      ],
+      "detailed": [
+        {
+          "account": "Assets",
+          "subaccount": "Current Assets",
+          "subclass": "Cash & Cash Equivalents",
+          "2022": 2245000,
+          "2023": 2450000,
+          "2024": 3500000
+        },
+        {
+          "account": "Assets",
+          "subaccount": "Current Assets",
+          "subclass": "Accounts Receivable",
+          "2022": 495000,
+          "2023": 540000,
+          "2024": 650000
+        },
+        {
+          "account": "Assets",
+          "subaccount": "Current Assets",
+          "subclass": "Inventory",
+          "2022": 3200000,
+          "2023": 3500000,
+          "2024": 3800000
+        },
+        {
+          "account": "Assets",
+          "subaccount": "Current Assets",
+          "subclass": "Prepaid Expenses",
+          "2022": 115000,
+          "2023": 125000,
+          "2024": 145000
+        },
+        {
+          "account": "Assets",
+          "subaccount": "Non-Current Assets",
+          "subclass": "Property, Plant & Equipment",
+          "2022": 1150000,
+          "2023": 1250000,
+          "2024": 1375000
+        },
+        {
+          "account": "Assets",
+          "subaccount": "Non-Current Assets",
+          "subclass": "Intangible Assets",
+          "2022": 230000,
+          "2023": 250000,
+          "2024": 275000
+        },
+        {
+          "account": "Liabilities",
+          "subaccount": "Current Liabilities",
+          "subclass": "Accounts Payable",
+          "2022": 1150000,
+          "2023": 1250000,
+          "2024": 1870000
+        },
+        {
+          "account": "Liabilities",
+          "subaccount": "Current Liabilities",
+          "subclass": "Short-term Loans",
+          "2022": 690000,
+          "2023": 750000,
+          "2024": 850000
+        },
+        {
+          "account": "Liabilities",
+          "subaccount": "Current Liabilities",
+          "subclass": "Accrued Expenses",
+          "2022": 320000,
+          "2023": 350000,
+          "2024": 494852
+        },
+        {
+          "account": "Liabilities",
+          "subaccount": "Non-Current Liabilities",
+          "subclass": "Long-term Debt",
+          "2022": 463456,
+          "2023": 522972,
+          "2024": 1065447
+        },
+        {
+          "account": "Equity",
+          "subaccount": "Shareholders' Equity",
+          "subclass": "Common Stock",
+          "2022": 1000000,
+          "2023": 1000000,
+          "2024": 1000000
+        },
+        {
+          "account": "Equity",
+          "subaccount": "Shareholders' Equity",
+          "subclass": "Retained Earnings",
+          "2022": 1422222,
+          "2023": 1658409,
+          "2024": 2250785
+        }
+      ],
+      "quarterly": [
+        {
+          "quarter": "Q1 2023",
+          "assets": 5175000,
+          "currentAssets": 3250000,
+          "nonCurrentAssets": 1925000,
+          "liabilities": 2700000,
+          "currentLiabilities": 2200000,
+          "nonCurrentLiabilities": 500000,
+          "equity": 2475000
+        },
+        {
+          "quarter": "Q2 2023",
+          "assets": 5295000,
+          "currentAssets": 3350000,
+          "nonCurrentAssets": 1945000,
+          "liabilities": 2750000,
+          "currentLiabilities": 2240000,
+          "nonCurrentLiabilities": 510000,
+          "equity": 2545000
+        },
+        {
+          "quarter": "Q3 2023",
+          "assets": 5415000,
+          "currentAssets": 3450000,
+          "nonCurrentAssets": 1965000,
+          "liabilities": 2800000,
+          "currentLiabilities": 2280000,
+          "nonCurrentLiabilities": 520000,
+          "equity": 2615000
+        },
+        {
+          "quarter": "Q4 2023",
+          "assets": 5531381,
+          "currentAssets": 3550000,
+          "nonCurrentAssets": 1981381,
+          "liabilities": 2872972,
+          "currentLiabilities": 2350000,
+          "nonCurrentLiabilities": 522972,
+          "equity": 2658409
+        },
+        {
+          "quarter": "Q1 2024",
+          "assets": 6031381,
+          "currentAssets": 3950000,
+          "nonCurrentAssets": 2081381,
+          "liabilities": 3272972,
+          "currentLiabilities": 2550000,
+          "nonCurrentLiabilities": 722972,
+          "equity": 2758409
+        },
+        {
+          "quarter": "Q2 2024",
+          "assets": 6531381,
+          "currentAssets": 4350000,
+          "nonCurrentAssets": 2181381,
+          "liabilities": 3672972,
+          "currentLiabilities": 2750000,
+          "nonCurrentLiabilities": 922972,
+          "equity": 2858409
+        },
+        {
+          "quarter": "Q3 2024",
+          "assets": 7031381,
+          "currentAssets": 4750000,
+          "nonCurrentAssets": 2281381,
+          "liabilities": 4072972,
+          "currentLiabilities": 2950000,
+          "nonCurrentLiabilities": 1122972,
+          "equity": 2958409
+        },
+        {
+          "quarter": "Q4 2024",
+          "assets": 7531084,
+          "currentAssets": 5150000,
+          "nonCurrentAssets": 2381084,
+          "liabilities": 4280299,
+          "currentLiabilities": 3214852,
+          "nonCurrentLiabilities": 1065447,
+          "equity": 3250785
+        }
+      ]
+    }
+  },
+  "cashFlow": {
+    "monthlyCashFlowTrends": [
+      { "month": "Jan", "cashInflow": 65000, "cashOutflow": 55000, "netCashFlow": 10000 },
+      { "month": "Feb", "cashInflow": 70000, "cashOutflow": 58000, "netCashFlow": 12000 },
+      { "month": "Mar", "cashInflow": 75000, "cashOutflow": 60000, "netCashFlow": 15000 },
+      { "month": "Apr", "cashInflow": 72000, "cashOutflow": 62000, "netCashFlow": 10000 },
+      { "month": "May", "cashInflow": 78000, "cashOutflow": 65000, "netCashFlow": 13000 },
+      { "month": "Jun", "cashInflow": 80000, "cashOutflow": 68000, "netCashFlow": 12000 }
+    ],
+    "financingCashFlowActivities": [
+      { "name": "Loan Repayment", "value": 45000, "color": "#A200C1" },
+      { "name": "Dividend Paid", "value": 25000, "color": "#C080D3" },
+      { "name": "Interest Paid", "value": 15000, "color": "#FFB100" },
+      { "name": "New Financing", "value": 35000, "color": "#4CAF50" }
+    ],
+    "netIncreaseCashYear": [
+      { "year": "2018", "value": 50000 },
+      { "year": "2019", "value": 65000 },
+      { "year": "2020", "value": 75000 },
+      { "year": "2021", "value": 90000 },
+      { "year": "2022", "value": 110000 },
+      { "year": "2023", "value": 130000 }
+    ],
+    "investingCashFlowActivities": [
+      { "name": "Equipment Purchase", "value": 65000, "color": "#A200C1" },
+      { "name": "Property Acquisition", "value": 120000, "color": "#C080D3" },
+      { "name": "Investment in Securities", "value": 45000, "color": "#FFB100" },
+      { "name": "Sale of Assets", "value": 25000, "color": "#4CAF50" }
+    ],
+    "operatingCashFlowActivities": [
+      { "name": "Cash from Customers", "value": 3574625, "color": "#A200C1" },
+      { "name": "Cash for Inventory", "value": 1956756, "color": "#C080D3" },
+      { "name": "Cash for Wages", "value": 1254352, "color": "#FFB100" },
+      { "name": "Cash for Operating Expenses", "value": 543098, "color": "#4CAF50" }
+    ],
+    "netIncreaseCashMonth": [
+      { "month": "Jan", "value": 10000 },
+      { "month": "Feb", "value": 12000 },
+      { "month": "Mar", "value": 15000 },
+      { "month": "Apr", "value": 10000 },
+      { "month": "May", "value": 13000 },
+      { "month": "Jun", "value": 12000 },
+      { "month": "Jul", "value": 14000 },
+      { "month": "Aug", "value": 16000 },
+      { "month": "Sep", "value": 13000 },
+      { "month": "Oct", "value": 15000 },
+      { "month": "Nov", "value": 17000 },
+      { "month": "Dec", "value": 20000 }
+    ],
+    "tableData": {
+      "summary": [
+        {
+          "account": "Operating Activities",
+          "2022": 1465035,
+          "2023": 1605039,
+          "2024": 2569545
+        },
+        {
+          "account": "Investing Activities",
+          "2022": -850438,
+          "2023": -932438,
+          "2024": -1065467
+        },
+        {
+          "account": "Financing Activities",
+          "2022": -14517,
+          "2023": -15917,
+          "2024": -21731
+        },
+        {
+          "account": "Net Increase in Cash",
+          "2022": 33277,
+          "2023": 36477,
+          "2024": 47152
+        },
+        {
+          "account": "Cash at Beginning of Period",
+          "2022": 2211723,
+          "2023": 2245000,
+          "2024": 2450000
+        },
+        {
+          "account": "Cash at End of Period",
+          "2022": 2245000,
+          "2023": 2450000,
+          "2024": 3500000
+        }
+      ],
+      "detailed": [
+        {
+          "account": "Operating Activities",
+          "subaccount": "Cash Received from Customers",
+          "2022": 3245780,
+          "2023": 3574625,
+          "2024": 4297845
+        },
+        {
+          "account": "Operating Activities",
+          "subaccount": "Cash Paid to Suppliers",
+          "2022": -1789520,
+          "2023": -1956756,
+          "2024": -1729239
+        },
+        {
+          "account": "Operating Activities",
+          "subaccount": "Cash Paid to Employees",
+          "2022": -1145352,
+          "2023": -1254352,
+          "2024": -1354352
+        },
+        {
+          "account": "Operating Activities",
+          "subaccount": "Cash Paid for Operating Expenses",
+          "2022": -495098,
+          "2023": -543098,
+          "2024": -643098
+        },
+        {
+          "account": "Operating Activities",
+          "subaccount": "Interest Paid",
+          "2022": -18760,
+          "2023": -20316,
+          "2024": -36000
+        },
+        {
+          "account": "Operating Activities",
+          "subaccount": "Income Taxes Paid",
+          "2022": -148352,
+          "2023": -162214,
+          "2024": -259986
+        },
+        {
+          "account": "Operating Activities",
+          "subaccount": "Other Operating Cash Flows",
+          "2022": 32450,
+          "2023": 35316,
+          "2024": 42798
+        },
+        {
+          "account": "Investing Activities",
+          "subaccount": "Purchase of Property, Plant & Equipment",
+          "2022": -185000,
+          "2023": -205000,
+          "2024": -225000
+        },
+        {
+          "account": "Investing Activities",
+          "subaccount": "Purchase of Investments",
+          "2022": -690438,
+          "2023": -752438,
+          "2024": -865467
+        },
+        {
+          "account": "Investing Activities",
+          "subaccount": "Proceeds from Sale of Equipment",
+          "2022": 25000,
+          "2023": 25000,
+          "2024": 25000
+        },
+        {
+          "account": "Financing Activities",
+          "subaccount": "Proceeds from Issuance of Debt",
+          "2022": 35000,
+          "2023": 35000,
+          "2024": 35000
+        },
+        {
+          "account": "Financing Activities",
+          "subaccount": "Repayment of Debt",
+          "2022": -45000,
+          "2023": -45000,
+          "2024": -45000
+        },
+        {
+          "account": "Financing Activities",
+          "subaccount": "Dividends Paid",
+          "2022": -22500,
+          "2023": -25000,
+          "2024": -30000
+        },
+        {
+          "account": "Financing Activities",
+          "subaccount": "Interest Paid",
+          "2022": -13500,
+          "2023": -15000,
+          "2024": -18000
+        }
+      ],
+      "quarterly": [
+        {
+          "quarter": "Q1 2023",
+          "operatingCashFlow": 401260,
+          "investingCashFlow": -233110,
+          "financingCashFlow": -3979,
+          "netCashFlow": 9119
+        },
+        {
+          "quarter": "Q2 2023",
+          "operatingCashFlow": 401260,
+          "investingCashFlow": -233110,
+          "financingCashFlow": -3979,
+          "netCashFlow": 9119
+        },
+        {
+          "quarter": "Q3 2023",
+          "operatingCashFlow": 401260,
+          "investingCashFlow": -233110,
+          "financingCashFlow": -3979,
+          "netCashFlow": 9119
+        },
+        {
+          "quarter": "Q4 2023",
+          "operatingCashFlow": 401259,
+          "investingCashFlow": -233108,
+          "financingCashFlow": -3980,
+          "netCashFlow": 9120
+        },
+        {
+          "quarter": "Q1 2024",
+          "operatingCashFlow": 642386,
+          "investingCashFlow": -266367,
+          "financingCashFlow": -5433,
+          "netCashFlow": 11788
+        },
+        {
+          "quarter": "Q2 2024",
+          "operatingCashFlow": 642386,
+          "investingCashFlow": -266367,
+          "financingCashFlow": -5433,
+          "netCashFlow": 11788
+        },
+        {
+          "quarter": "Q3 2024",
+          "operatingCashFlow": 642386,
+          "investingCashFlow": -266367,
+          "financingCashFlow": -5433,
+          "netCashFlow": 11788
+        },
+        {
+          "quarter": "Q4 2024",
+          "operatingCashFlow": 642387,
+          "investingCashFlow": -266366,
+          "financingCashFlow": -5432,
+          "netCashFlow": 11788
+        }
+      ]
+    }
+  },
+  "shop": {
+    "bestSellingCategories": [
+      { "name": "Electronics", "value": 35, "color": "#A200C1" },
+      { "name": "Clothing", "value": 25, "color": "#C080D3" },
+      { "name": "Home & Garden", "value": 20, "color": "#FFB100" },
+      { "name": "Sports", "value": 15, "color": "#4CAF50" },
+      { "name": "Books", "value": 5, "color": "#2196F3" }
+    ],
+    "productSales": [
+      { "product": "Product A", "2021": 3500, "2022": 4800, "2023": 6200 },
+      { "product": "Product B", "2021": 2800, "2022": 3900, "2023": 5100 },
+      { "product": "Product C", "2021": 4200, "2022": 5300, "2023": 6800 },
+      { "product": "Product D", "2021": 3100, "2022": 4200, "2023": 5500 },
+      { "product": "Product E", "2021": 2500, "2022": 3600, "2023": 4700 }
+    ],
+    "shopProfit": [
+      { "month": "Jan", "2021": 12000, "2022": 15000, "2023": 18000 },
+      { "month": "Feb", "2021": 13000, "2022": 16000, "2023": 19000 },
+      { "month": "Mar", "2021": 14000, "2022": 17000, "2023": 20000 },
+      { "month": "Apr", "2021": 13500, "2022": 16500, "2023": 19500 },
+      { "month": "May", "2021": 14500, "2022": 17500, "2023": 20500 },
+      { "month": "Jun", "2021": 15000, "2022": 18000, "2023": 21000 },
+      { "month": "Jul", "2021": 15500, "2022": 18500, "2023": 21500 },
+      { "month": "Aug", "2021": 16000, "2022": 19000, "2023": 22000 },
+      { "month": "Sep", "2021": 16500, "2022": 19500, "2023": 22500 },
+      { "month": "Oct", "2021": 17000, "2022": 20000, "2023": 23000 },
+      { "month": "Nov", "2021": 17500, "2022": 20500, "2023": 23500 },
+      { "month": "Dec", "2021": 18000, "2022": 21000, "2023": 24000 }
+    ],
+    "yearlyShopProfit": [
+      { "year": "2018", "profit": 150000 },
+      { "year": "2019", "profit": 180000 },
+      { "year": "2020", "profit": 210000 },
+      { "year": "2021", "profit": 240000 },
+      { "year": "2022", "profit": 270000 },
+      { "year": "2023", "profit": 300000 }
+    ],
+    "categoriesProfit": [
+      { "category": "Electronics", "profit": 45000 },
+      { "category": "Furniture", "profit": 35000 },
+      { "category": "Appliances", "profit": 30000 },
+      { "category": "Decor", "profit": 25000 },
+      { "category": "Lighting", "profit": 20000 }
+    ],
+    "categoryProfit": [
+      { "month": "Jan", "profit": 3500 },
+      { "month": "Feb", "profit": 3800 },
+      { "month": "Mar", "profit": 4200 },
+      { "month": "Apr", "profit": 4000 },
+      { "month": "May", "profit": 4300 },
+      { "month": "Jun", "profit": 4500 },
+      { "month": "Jul", "profit": 4700 },
+      { "month": "Aug", "profit": 4900 },
+      { "month": "Sep", "profit": 5100 },
+      { "month": "Oct", "profit": 5300 },
+      { "month": "Nov", "profit": 5500 },
+      { "month": "Dec", "profit": 5800 }
+    ]
+  },
+  "printers": {
+    "productionsYear": [
+      { "year": "2018", "multicolor": 450, "singleColor": 650 },
+      { "year": "2019", "multicolor": 500, "singleColor": 700 },
+      { "year": "2020", "multicolor": 550, "singleColor": 750 },
+      { "year": "2021", "multicolor": 600, "singleColor": 800 },
+      { "year": "2022", "multicolor": 650, "singleColor": 850 },
+      { "year": "2023", "multicolor": 700, "singleColor": 900 }
+    ],
+    "productionsMonth": [
+      { "month": "Jan", "multicolor": 45, "singleColor": 65 },
+      { "month": "Feb", "multicolor": 50, "singleColor": 70 },
+      { "month": "Mar", "multicolor": 55, "singleColor": 75 },
+      { "month": "Apr", "multicolor": 60, "singleColor": 80 },
+      { "month": "May", "multicolor": 65, "singleColor": 85 },
+      { "month": "Jun", "multicolor": 70, "singleColor": 90 },
+      { "month": "Jul", "multicolor": 75, "singleColor": 95 },
+      { "month": "Aug", "multicolor": 80, "singleColor": 100 },
+      { "month": "Sep", "multicolor": 75, "singleColor": 95 },
+      { "month": "Oct", "multicolor": 70, "singleColor": 90 },
+      { "month": "Nov", "multicolor": 65, "singleColor": 85 },
+      { "month": "Dec", "multicolor": 60, "singleColor": 80 }
+    ],
+    "netProfitProduction": [
+      { "quarter": "Q1", "2021": 65000, "2022": 85000, "2023": 105000 },
+      { "quarter": "Q2", "2021": 70000, "2022": 90000, "2023": 110000 },
+      { "quarter": "Q3", "2021": 75000, "2022": 95000, "2023": 115000 },
+      { "quarter": "Q4", "2021": 80000, "2022": 100000, "2023": 120000 }
+    ],
+    "sumProfitProduction": [
+      { "year": "2018", "profit": 220000 },
+      { "year": "2019", "profit": 250000 },
+      { "year": "2020", "profit": 280000 },
+      { "year": "2021", "profit": 310000 },
+      { "year": "2022", "profit": 340000 },
+      { "year": "2023", "profit": 370000 }
+    ],
+    "yearlyMulticolorProfit": [
+      { "year": "2018", "profit": 130000 },
+      { "year": "2019", "profit": 150000 },
+      { "year": "2020", "profit": 170000 },
+      { "year": "2021", "profit": 190000 },
+      { "year": "2022", "profit": 210000 },
+      { "year": "2023", "profit": 230000 }
+    ],
+    "yearlySingleColorProfit": [
+      { "year": "2018", "profit": 90000 },
+      { "year": "2019", "profit": 100000 },
+      { "year": "2020", "profit": 110000 },
+      { "year": "2021", "profit": 120000 },
+      { "year": "2022", "profit": 130000 },
+      { "year": "2023", "profit": 140000 }
+    ],
+    "materialsConsumption": [
+      { "name": "Paper", "value": 45, "color": "#A200C1" },
+      { "name": "Cardboard", "value": 25, "color": "#C080D3" },
+      { "name": "Vinyl", "value": 15, "color": "#FFB100" },
+      { "name": "Plastic", "value": 10, "color": "#4CAF50" },
+      { "name": "Other", "value": 5, "color": "#2196F3" }
+    ],
+    "materialsCost": [
+      { "material": "Paper", "cost": 25000 },
+      { "material": "Cardboard", "cost": 18000 },
+      { "material": "Vinyl", "cost": 15000 },
+      { "material": "Plastic", "cost": 12000 },
+      { "material": "Other", "cost": 8000 }
+    ],
+    "colorsConsumption": [
+      { "name": "Cyan", "value": 30, "color": "#00BCD4" },
+      { "name": "Magenta", "value": 25, "color": "#E91E63" },
+      { "name": "Yellow", "value": 20, "color": "#FFEB3B" },
+      { "name": "Black", "value": 15, "color": "#212121" },
+      { "name": "Special Colors", "value": 10, "color": "#9C27B0" }
+    ],
+    "colorsCost": [
+      { "color": "Cyan", "cost": 15000 },
+      { "color": "Magenta", "cost": 14000 },
+      { "color": "Yellow", "cost": 13000 },
+      { "color": "Black", "cost": 10000 },
+      { "color": "Special Colors", "cost": 18000 }
+    ]
+  },
+  "customers": {
+    "salesProfitScatter": [
+      { "customer": "Customer A", "sales": 85000, "profit": 17000, "profitMargin": 20 },
+      { "customer": "Customer B", "sales": 65000, "profit": 16250, "profitMargin": 25 },
+      { "customer": "Customer C", "sales": 95000, "profit": 19000, "profitMargin": 20 },
+      { "customer": "Customer D", "sales": 55000, "profit": 11000, "profitMargin": 20 },
+      { "customer": "Customer E", "sales": 75000, "profit": 18750, "profitMargin": 25 },
+      { "customer": "Customer F", "sales": 45000, "profit": 9000, "profitMargin": 20 },
+      { "customer": "Customer G", "sales": 35000, "profit": 8750, "profitMargin": 25 },
+      { "customer": "Customer H", "sales": 25000, "profit": 5000, "profitMargin": 20 },
+      { "customer": "Customer I", "sales": 15000, "profit": 3000, "profitMargin": 20 },
+      { "customer": "Customer J", "sales": 105000, "profit": 26250, "profitMargin": 25 },
+      { "customer": "Customer K", "sales": 115000, "profit": 23000, "profitMargin": 20 },
+      { "customer": "Customer L", "sales": 125000, "profit": 31250, "profitMargin": 25 }
+    ],
+    "profitableCategories": [
+      { "name": "Electronics", "value": 42, "color": "#A200C1" },
+      { "name": "Furniture", "value": 28, "color": "#C080D3" },
+      { "name": "Appliances", "value": 18, "color": "#FFB100" },
+      { "name": "Decor", "value": 12, "color": "#4CAF50" }
+    ],
+    "profitByPrinterOrders": [
+      { "customer": "Customer A", "profit": 15000 },
+      { "customer": "Customer B", "profit": 12000 },
+      { "customer": "Customer C", "profit": 18000 },
+      { "customer": "Customer D", "profit": 9000 },
+      { "customer": "Customer E", "profit": 14000 }
+    ]
+  }
+}

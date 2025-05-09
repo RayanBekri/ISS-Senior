@@ -1,5 +1,5 @@
 import type React from "react"
-import { Sidebar } from "@/components/sidebar"
+import Sidebar from "@/components/sidebar" // Changed from named import to default import
 
 export default function ProductsLayout({
   children,
@@ -13,4 +13,3 @@ export default function ProductsLayout({
     </div>
   )
 }
-

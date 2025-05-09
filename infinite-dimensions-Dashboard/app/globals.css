@@ -4,9 +4,7 @@
 
 :root {
   --foreground-rgb: 0, 0, 0;
-  --background-rgb: 245, 245, 247;
-  --primary-color: 162, 0, 193; /* A200C1 */
-  --primary-color-70: 192, 128, 211; /* A200C1 at 70% opacity */
+  --background-rgb: 245, 245, 245;
 }
 
 body {
@@ -100,4 +98,3 @@ body {
     @apply bg-background text-foreground;
   }
 }
-

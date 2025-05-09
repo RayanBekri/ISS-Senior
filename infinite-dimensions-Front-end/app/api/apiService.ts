@@ -14,7 +14,7 @@ import type {
 // Update the API_BASE_URL to ensure it's correctly pointing to your backend
 // If you're running the frontend and backend on different domains, you'll need to handle CORS
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api"
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://45.141.36.186:3000/api"
 
 // Add a function to check API connectivity
 async function checkApiConnectivity() {

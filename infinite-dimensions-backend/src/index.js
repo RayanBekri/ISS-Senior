@@ -14,6 +14,8 @@ const printerRoutes = require('./routes/printerRoutes');
 const financeRoutes = require('./routes/financeRoutes');
 const consultationRoutes = require('./routes/consultationRoutes');
 const chatbotRoutes = require('./routes/chatbotRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const employeeRoutes = require('./routes/employeeRoutes');
 // const notificationRoutes = require('./routes/notificationRoutes'); // Optional
 
 const app = express();
@@ -36,6 +38,8 @@ app.use('/api/printers', printerRoutes);
 app.use('/api/finance', financeRoutes);
 app.use('/api/consultations', consultationRoutes);
 app.use('/api/chatbot', chatbotRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/employees', employeeRoutes);
 // app.use('/api/notifications', notificationRoutes); // Optional
 
 app.get('/health', (req, res) => {

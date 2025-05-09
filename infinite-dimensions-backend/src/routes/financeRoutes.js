@@ -5,7 +5,13 @@ const {
   recordTransaction, 
   getFinanceRecords, 
   updateFinanceRecord, 
-  deleteFinanceRecord 
+  deleteFinanceRecord,
+  getOverview,
+  getSalesProfit,
+  getCategoriesProfit,
+  getPrinterProductions,
+  getCustomerProfitabilityScatter,
+  getMaterialsConsumption
 } = require('../controllers/financeController');
 const { authenticateToken, authorizeRoles } = require('../middleware/auth');
 
@@ -45,5 +51,12 @@ router.delete('/:id',
   authorizeRoles('ADMIN'),
   deleteFinanceRecord
 );
+
+router.get('/overview', authenticateToken, authorizeRoles('ADMIN'), getOverview);
+router.get('/sales-profit', authenticateToken, authorizeRoles('ADMIN'), getSalesProfit);
+router.get('/shop/categories-profit', authenticateToken, authorizeRoles('ADMIN'), getCategoriesProfit);
+router.get('/printers/productions-year', authenticateToken, authorizeRoles('ADMIN'), getPrinterProductions);
+router.get('/customers/sales-profit-scatter', authenticateToken, authorizeRoles('ADMIN'), getCustomerProfitabilityScatter);
+router.get('/printers/materials', authenticateToken, authorizeRoles('ADMIN'), getMaterialsConsumption);
 
 module.exports = router;

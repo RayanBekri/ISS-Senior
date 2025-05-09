@@ -46,7 +46,7 @@ exports.requestConsultation = async (req, res, next) => {
   const { userId, timeslot, notes } = req.body;
   try {
     const [result] = await pool.query(
-      'INSERT INTO consultations (user_id, timeslot, status, notes) VALUES (?, ?, ?, ?)',
+      'INSERT INTO consultation (user_id, timeslot, status, notes) VALUES (?, ?, ?, ?)',
       [userId, timeslot, 'pending', notes || null]
     );
     res.status(201).json({ message: 'Consultation requested', consultationId: result.insertId });
